@@ -22,10 +22,10 @@ export default function Home() {
   const [portfolioValue, setPortfolioValue] = useState(100000);
   const [portfolioPnL, setPortfolioPnL] = useState(0);
 
-  // Fetch portfolio data
-  const portfolioQuery = trpc.portfolio.get.useQuery(undefined, {
-    enabled: isAuthenticated,
-  }) as any; // Type fix for router
+  // Portfolio data (mock for now - will connect to tRPC later)
+  // const portfolioQuery = trpc.portfolio.get.useQuery(undefined, {
+  //   enabled: isAuthenticated,
+  // });
 
   useEffect(() => {
     const fetchTopCoins = async () => {
@@ -48,12 +48,11 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Mock portfolio data for now
   useEffect(() => {
-    if (portfolioQuery?.data?.portfolio) {
-      setPortfolioValue(portfolioQuery.data.portfolio.totalValue);
-      setPortfolioPnL(portfolioQuery.data.portfolio.totalRealizedPnl);
-    }
-  }, [portfolioQuery?.data]);
+    setPortfolioValue(1000); // $1000 starting balance
+    setPortfolioPnL(0); // No P&L yet
+  }, []);
 
   const displayValue = portfolioValue / 100;
   const displayPnL = portfolioPnL / 100;
@@ -111,9 +110,7 @@ export default function Home() {
             <div className="p-6 space-y-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Holdings</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {(portfolioQuery?.data?.holdings?.length as any) || 0}
-                </p>
+                <p className="text-2xl font-bold text-foreground">0</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">24h Change</p>
@@ -166,15 +163,9 @@ export default function Home() {
           <h3 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h3>
           <Card className="bg-card border-border/50">
             <div className="p-6">
-              {(portfolioQuery?.data?.portfolio as any) ? (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  No trades yet. Start trading to see activity here.
-                </p>
-              ) : (
-                <div className="flex items-center justify-center py-8">
-                  <Spinner />
-                </div>
-              )}
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No trades yet. Start trading to see activity here.
+              </p>
             </div>
           </Card>
         </div>

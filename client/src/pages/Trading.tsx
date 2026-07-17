@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import AdvancedCharts from "@/components/AdvancedCharts";
 
 export default function Trading() {
   const [selectedCoin, setSelectedCoin] = useState("bitcoin");
@@ -34,14 +35,7 @@ export default function Trading() {
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <Card className="bg-card border-border/50">
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-foreground mb-6">Trading Chart</h2>
-                <div className="h-96 bg-muted rounded-lg flex items-center justify-center">
-                  <p className="text-muted-foreground">Chart component coming soon</p>
-                </div>
-              </div>
-            </Card>
+            <AdvancedCharts symbol="BTC" price={62715} change24h={-2.46} />
           </div>
 
           <div>
