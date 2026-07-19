@@ -14,7 +14,7 @@
 - [ ] Technical indicators (RSI, MACD, Bollinger Bands)
 - [x] Order book display with bid/ask depth
 - [ ] Recent trades panel
-- [ ] Advanced search with filters
+- [x] Advanced search with filters
 - [ ] Asset detail pages with comprehensive stats
 - [x] Responsive mobile-first design
 - [x] Smooth animations and transitions
@@ -28,7 +28,7 @@
 - [ ] Copy trade history and performance tracking
 - [x] Follower/reputation system
 - [ ] Trader signal publishing
-- [x] Signal feed with real-time updates
+- [ ] Signal feed with real-time updates
 
 ## Phase 4: AI Signal Generation (from Gemini Agent)
 - [ ] LunarCrush API integration for social sentiment
