@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import AdvancedCharts from "@/components/AdvancedCharts";
+import CandlestickChart from "@/components/CandlestickChart";
 import OrderBook from "@/components/OrderBook";
 
 export default function Trading() {
@@ -36,7 +36,7 @@ export default function Trading() {
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Charts and Order Book */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <AdvancedCharts symbol="BTC" price={62715} change24h={-2.46} />
+          <CandlestickChart symbol="BTC" price={62715} change24h={-2.46} />
           <OrderBook symbol="BTC" />
         </div>
 
