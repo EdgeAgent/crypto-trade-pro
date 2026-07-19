@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
-import { TrendingUp, TrendingDown, Plus, Eye } from "lucide-react";
-import { trpc } from "@/lib/trpc";
+import { useEffect, useState } from "react";
+import { Eye, Plus, TrendingUp, TrendingDown } from "lucide-react";
+import { getLoginUrl } from "@/const";
+import PortfolioHoldings from "@/components/PortfolioHoldings";
+import Watchlist from "@/components/Watchlist";
 
 interface CoinData {
   id: string;
   symbol: string;
   name: string;
-  image: string;
   current_price: number;
   price_change_percentage_24h: number;
+  market_cap: number;
+  total_volume: number;
+  image: string;
 }
 
 export default function Home() {
@@ -21,11 +24,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [portfolioValue, setPortfolioValue] = useState(100000);
   const [portfolioPnL, setPortfolioPnL] = useState(0);
-
-  // Portfolio data (mock for now - will connect to tRPC later)
-  // const portfolioQuery = trpc.portfolio.get.useQuery(undefined, {
-  //   enabled: isAuthenticated,
-  // });
 
   useEffect(() => {
     const fetchTopCoins = async () => {
@@ -48,10 +46,9 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Mock portfolio data for now
   useEffect(() => {
-    setPortfolioValue(1000); // $1000 starting balance
-    setPortfolioPnL(0); // No P&L yet
+    setPortfolioValue(1000);
+    setPortfolioPnL(0);
   }, []);
 
   const displayValue = portfolioValue / 100;
@@ -83,6 +80,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Portfolio Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-card border-border/50 col-span-1 md:col-span-2">
             <div className="p-6">
@@ -110,64 +108,59 @@ export default function Home() {
             <div className="p-6 space-y-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Holdings</p>
-                <p className="text-2xl font-bold text-foreground">0</p>
+                <p className="text-2xl font-bold text-foreground">3</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">24h Change</p>
-                <p className={pnlTrend ? "text-green-500" : "text-red-500"}>
-                  <span className="text-lg font-semibold">
-                    {pnlTrend ? "+" : ""}{pnlPercent}%
-                  </span>
-                </p>
+                <p className="text-xl font-bold text-green-400">+0.00%</p>
               </div>
             </div>
           </Card>
         </div>
 
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Top Cryptocurrencies</h3>
-          {loading ? (
-            <Card className="bg-card border-border/50 p-8 flex items-center justify-center">
-              <Spinner />
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              {topCoins.map((coin) => {
-                const coinTrend = coin.price_change_percentage_24h >= 0;
-                return (
+        {/* Tabs for Holdings and Watchlist */}
+        <div className="space-y-8">
+          {/* Portfolio Holdings Section */}
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Portfolio Holdings</h2>
+            <PortfolioHoldings />
+          </div>
+
+          {/* Watchlist Section */}
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Watchlist</h2>
+            <Watchlist />
+          </div>
+
+          {/* Top Cryptocurrencies */}
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Top Cryptocurrencies</h2>
+            {loading ? (
+              <Card className="bg-card border-border/50 p-8 text-center">
+                <p className="text-muted-foreground">Loading market data...</p>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                {topCoins.map((coin) => (
                   <Card key={coin.id} className="bg-card border-border/50 hover:border-accent/50 transition-colors cursor-pointer">
                     <div className="p-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <img src={coin.image} alt={coin.name} className="w-6 h-6 rounded-full" />
+                        <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full" />
                         <div>
-                          <p className="text-sm font-semibold text-foreground">{coin.symbol.toUpperCase()}</p>
+                          <p className="font-semibold text-foreground text-sm">{coin.symbol.toUpperCase()}</p>
                           <p className="text-xs text-muted-foreground">{coin.name}</p>
                         </div>
                       </div>
                       <p className="text-lg font-bold text-foreground mb-2">${coin.current_price.toFixed(2)}</p>
-                      <div className={coinTrend ? "text-green-500" : "text-red-500"}>
-                        <div className="flex items-center gap-1 text-sm font-medium">
-                          {coinTrend ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                          {coin.price_change_percentage_24h.toFixed(2)}%
-                        </div>
-                      </div>
+                      <p className={coin.price_change_percentage_24h >= 0 ? "text-green-400 text-sm font-semibold" : "text-red-400 text-sm font-semibold"}>
+                        {coin.price_change_percentage_24h >= 0 ? "+" : ""}{coin.price_change_percentage_24h.toFixed(2)}%
+                      </p>
                     </div>
                   </Card>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h3>
-          <Card className="bg-card border-border/50">
-            <div className="p-6">
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No trades yet. Start trading to see activity here.
-              </p>
-            </div>
-          </Card>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
