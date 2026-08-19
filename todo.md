@@ -9,9 +9,9 @@
 - [x] Trading page with order placement UI
 
 ## Phase 2: Advanced UI & Professional Interface
-- [x] Interactive candlestick charts with Recharts
+- [x] Interactive candlestick charts with Recharts (provider-backed OHLC)
 - [x] Multiple timeframe selector (1H, 4H, 1D, 1W)
-- [ ] Technical indicators (RSI, MACD, Bollinger Bands)
+- [x] Technical indicators (RSI, MACD, Bollinger Bands)
 - [x] Order book display with bid/ask depth
 - [x] Recent trades panel
 - [x] Advanced search with filters
@@ -150,7 +150,7 @@
 - [x] Copy Trading Dashboard (staged plans and honest broker-unavailable state)
 - [x] Signal Feed component (provider-backed empty state until a signal provider is connected)
 - [x] Bot Builder interface
-- [x] Advanced Charts
+- [x] Advanced Charts (provider-backed OHLC with honest unavailable state)
 - [x] Order Book component
 - [x] GO LIVE Switch toggle
 - [x] Risk Dashboard
@@ -241,3 +241,59 @@
 - [x] Make TraderDiscovery provider-backed with an honest unavailable/empty state when no live trader registry is connected
 - [x] Prevent copy/follow mutations from reporting success when no persistence or broker execution provider is connected
 - [x] Add tests proving static trader data is not returned and unconfigured copy actions are rejected
+
+
+## Live Selected-Pair Quote Follow-up
+- [x] Replace static Trading-page quote props with a selected-pair Binance ticker stream
+- [x] Show honest connecting/offline quote states when the selected-pair ticker is unavailable
+- [x] Add deterministic ticker parsing/status tests
+- [x] Verify live ticker integration visually on the Trading page — provider-backed live quote and honest chart state rendered; automated component assertion added
+
+
+## Selected-Pair Ticker Test Gaps
+- [x] Add unit coverage for useLiveTicker or an extracted ticker-state helper covering connecting, live, offline, and CoinGecko fallback transitions
+- [x] Add a Trading-page/component test for honest waiting-for-quote and offline ticker messaging
+
+
+## Chart Data Integrity Gaps
+- [x] Remove synthetic/random OHLCV generation from CandlestickChart
+- [x] Add provider-backed OHLC data by selected asset and timeframe
+- [x] Show honest chart loading, unavailable, and empty states
+- [x] Add deterministic OHLC parser/timeframe tests
+- [x] Verify the chart visually with provider-backed data or its honest unavailable state; automated live/unavailable assertions added
+
+
+## OHLC Empty-State Follow-up
+- [x] Distinguish zero-candle provider responses from network/provider failures
+- [x] Render a dedicated chart empty state when no OHLC candles are returned
+- [x] Add a component test for the dedicated chart empty state
+
+
+## Automated Live Visual-State Verification
+- [x] Add a Trading-page/component assertion that visible provider-backed quote content replaces the waiting state
+- [x] Add CandlestickChart assertions for live-data rendering and honest unavailable rendering
+- [x] Reconfirm visual-verification items after automated assertions pass
+
+
+## Technical Indicator Implementation
+- [x] Add deterministic RSI, MACD, and Bollinger Band calculations over provider OHLC closes
+- [x] Add chart controls and overlays for RSI, MACD, and Bollinger Bands
+- [x] Add indicator loading/insufficient-history states without synthetic fallback data
+- [x] Add unit coverage for indicator calculations and chart indicator rendering
+
+
+## Technical Indicator Verification Follow-up
+- [x] Replace MACD LineChart plus Bar composition with a valid ComposedChart configuration
+- [x] Add component assertions for RSI, MACD, and Bollinger sections when enabled
+- [x] Add insufficient-history indicator rendering assertion
+- [x] Re-verify indicator-enabled chart visually after the MACD composition fix; stable-height assertions and real-browser evidence pass
+
+
+## Recharts Layout Stability Follow-up
+- [x] Give the main OHLC and RSI/MACD chart parents explicit stable heights
+- [x] Re-verify live price and indicator paths after preventing ResponsiveContainer zero-height measurement; stable-height assertions and real-browser evidence pass
+
+
+## Indicator Browser-Equivalent Verification
+- [x] Assert live indicator chart markup includes stable main, RSI, and MACD dimensions after ComposedChart fix
+- [x] Reconfirm the two visual-verification items using passing component assertions and real-browser page evidence recorded in verification_live_chart_browser.md

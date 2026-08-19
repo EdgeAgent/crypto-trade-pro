@@ -4,19 +4,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CandlestickChart from "@/components/CandlestickChart";
+import LiveQuotePanel from "@/components/LiveQuotePanel";
 import OrderBook from "@/components/OrderBook";
 import RecentTrades from "@/components/RecentTrades";
 import { trpc } from "@/lib/trpc";
+import { useLiveTicker } from "@/hooks/useLiveTicker";
 
 type TradeSide = "BUY" | "SELL";
 type OrderType = "market" | "limit";
-
-const marketPrices: Record<string, number> = {
-  bitcoin: 62715,
-  ethereum: 1815.69,
-  cardano: 0.42,
-};
 
 const symbols: Record<string, string> = {
   bitcoin: "BTC/USDT",
@@ -34,8 +29,11 @@ export default function Trading() {
   const [liveOrderStatus, setLiveOrderStatus] = useState<string | null>(null);
 
   const liveOrderMutation = trpc.trading.placeLiveMarketOrder.useMutation();
-  const currentPrice = marketPrices[selectedCoin] ?? 0;
   const symbol = symbols[selectedCoin] ?? "BTC/USDT";
+  const streamSymbol = symbol.replace("/", "").toLowerCase();
+  const ticker = useLiveTicker(streamSymbol);
+  const currentPrice = ticker.data?.price ?? 0;
+  const currentChange = ticker.data?.change24h ?? 0;
   const liveModeReady = false;
 
   const orderValue = useMemo(() => {
@@ -87,12 +85,12 @@ export default function Trading() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <CandlestickChart symbol="BTC" price={62715} change24h={-2.46} />
-          <OrderBook symbol="BTC" />
+          <LiveQuotePanel symbol={symbol} ticker={ticker} />
+          <OrderBook symbol={symbol} />
         </div>
 
         <div className="mb-8">
-          <RecentTrades symbol="btcusdt" />
+          <RecentTrades symbol={streamSymbol} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -142,7 +140,7 @@ export default function Trading() {
                   {(["buy", "sell"] as const).map((side) => (
                     <TabsContent key={side} value={side} className="space-y-4">
                       <div>
-                        <label htmlFor="coin" className="text-sm font-medium text-foreground">Coin</label>
+                        <div className="flex items-center justify-between"><label htmlFor="coin" className="text-sm font-medium text-foreground">Coin</label><span className={`text-xs ${ticker.status === "live" ? "text-green-400" : "text-amber-400"}`}>{ticker.status === "live" ? "Live quote" : ticker.status}</span></div>
                         <select id="coin" value={selectedCoin} onChange={(event) => setSelectedCoin(event.target.value)} className="w-full mt-2 px-3 py-2 bg-muted border border-border rounded-md text-foreground">
                           <option value="bitcoin">Bitcoin (BTC)</option>
                           <option value="ethereum">Ethereum (ETH)</option>
