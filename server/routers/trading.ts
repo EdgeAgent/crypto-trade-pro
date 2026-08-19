@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
+import { assertLiveOrderAllowed, type SupportedBroker } from "../liveOrderGuard";
 
 // Paper Trading Engine
 export const tradingRouter = router({
@@ -77,6 +78,34 @@ export const tradingRouter = router({
         order,
         message: `Limit order created for ${input.quantity} ${input.symbol} at $${input.limitPrice}`,
       };
+    }),
+
+  // Live market order path. Credentials and risk gates are checked on the server before any adapter can submit an order.
+  placeLiveMarketOrder: protectedProcedure
+    .input(
+      z.object({
+        broker: z.enum(["binance", "coinbase", "kraken"]),
+        symbol: z.string().min(3),
+        side: z.enum(["BUY", "SELL"]),
+        quantity: z.number().positive(),
+        price: z.number().positive(),
+        dailyLossLimit: z.number().positive(),
+        dailyLossUsed: z.number().nonnegative(),
+        explicitConfirmation: z.literal(true),
+      })
+    )
+    .mutation(async ({ input }) => {
+      assertLiveOrderAllowed({
+        broker: input.broker as SupportedBroker,
+        dailyLossLimit: input.dailyLossLimit,
+        dailyLossUsed: input.dailyLossUsed,
+        explicitConfirmation: input.explicitConfirmation,
+      });
+
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message: "Live execution adapter is not enabled for this environment. Configure and validate a broker connection before enabling real orders.",
+      });
     }),
 
   // Cancel an order

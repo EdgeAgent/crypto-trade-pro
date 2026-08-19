@@ -55,6 +55,9 @@ export default function CandlestickChart({ symbol, price, change24h }: Candlesti
   const chartData = generateChartData();
   const highPrice = Math.max(...chartData.map((d) => d.high));
   const lowPrice = Math.min(...chartData.map((d) => d.low));
+  const chartMin = Math.floor(lowPrice * 0.995);
+  const chartMax = Math.ceil(highPrice * 1.005);
+  const yDomain: [number, number] = [chartMin, chartMax];
 
   return (
     <Card className="bg-card border-border/50">
@@ -93,10 +96,10 @@ export default function CandlestickChart({ symbol, price, change24h }: Candlesti
         {/* Chart */}
         <div className="mb-6">
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+            <AreaChart data={chartData} margin={{ top: 20, right: 16, left: 24, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis dataKey="time" stroke="rgba(255,255,255,0.5)" />
-              <YAxis stroke="rgba(255,255,255,0.5)" domain={["dataMin - 100", "dataMax + 100"]} />
+              <YAxis stroke="rgba(255,255,255,0.5)" domain={yDomain} width={72} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "rgba(0,0,0,0.8)",

@@ -152,7 +152,53 @@
 - [ ] Bot Builder interface
 - [ ] Advanced Charts
 - [ ] Order Book component
-- [ ] GO LIVE Switch toggle
-- [ ] Risk Dashboard
+- [x] GO LIVE Switch toggle
+- [x] Risk Dashboard
 - [ ] Performance Analytics
-- [ ] Settings panel
+- [x] Settings panel
+
+
+## Clarified Live-Readiness UI Requirement
+- [x] Add clearly labeled Binance API key and secret placeholders in Settings
+- [x] Add clearly labeled Coinbase API key, secret, and passphrase placeholders in Settings
+- [x] Add clearly labeled Kraken API key and secret placeholders in Settings
+- [x] Add OpenRouter API key placeholder and NVIDIA Nemotron/free-model selector in Settings
+- [x] Show that placeholders do not activate live execution until credentials are configured and GO LIVE is explicitly confirmed
+- [x] Keep all placeholder values out of source code, database seeds, and network requests
+- [x] Add UI tests for placeholder visibility and live-mode blocking state
+
+## Clarified Live-Readiness UI Requirement — Implementation Notes
+- [x] Broker fields are session-only UI placeholders and are not submitted to any exchange
+- [x] GO LIVE remains disabled while broker readiness is false
+- [x] Positive daily loss limit is displayed beside the execution state
+- [x] Real-capital disclosure is shown beside the live-mode controls
+- [x] Shared live-readiness validator has unit coverage
+- [x] TypeScript and Vitest checks pass after the UI update
+
+## User-Requested Live Trading Scope
+- [x] Preserve paper mode as the default safety state
+- [x] Require broker readiness and daily loss limit validation before any live order path
+- [x] Do not execute real orders without explicit user confirmation in the app
+- [x] Display a prominent real-capital risk disclosure beside the GO LIVE control
+- [x] Keep AI signal generation advisory unless the user separately enables an execution policy
+      
+
+
+## Remaining Readiness Gaps
+- [x] Build a dedicated Risk Dashboard component showing broker status, readiness, daily loss utilization, and alerts
+- [x] Add frontend/component tests for broker and OpenRouter placeholder visibility
+- [x] Add frontend/component test confirming GO LIVE stays disabled until readiness conditions are satisfied
+
+
+## Server-Side Live Order Safety Gaps
+- [x] Enforce broker readiness and positive daily-loss validation inside server-side live-order procedures
+- [x] Require explicit in-app confirmation on every real order submission
+- [x] Add tests proving live-order procedures reject unready accounts and missing confirmations
+- [x] Keep order execution disabled while credentials remain UI placeholders
+
+
+## Final Live Order Confirmation Gaps
+- [x] Add a per-order live trading confirmation dialog in the Trading UI
+- [x] Send explicitConfirmation only after the per-order dialog is accepted
+- [x] Add procedure-level tests for trading.placeLiveMarketOrder rejection paths
+- [x] Verify missing broker credentials, invalid daily loss state, and missing confirmation at the tRPC boundary

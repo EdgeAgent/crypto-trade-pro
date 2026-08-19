@@ -13,48 +13,34 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/">
-            <a className="flex items-center gap-2 font-bold text-xl text-foreground hover:text-accent transition-colors">
-              <BarChart3 className="w-6 h-6 text-accent" />
-              CryptoTrade Pro
-            </a>
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-foreground hover:text-accent transition-colors">
+            <BarChart3 className="w-6 h-6 text-accent" />
+            CryptoTrade Pro
           </Link>
 
           {/* Main Navigation */}
           <div className="hidden md:flex items-center gap-1">
-            <Link href="/">
-              <a className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                Dashboard
-              </a>
+            <Link href="/" className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              Dashboard
             </Link>
-            <Link href="/markets">
-              <a className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                Markets
-              </a>
+            <Link href="/markets" className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              Markets
             </Link>
-            <Link href="/traders">
-              <a className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
-                <Users className="w-4 h-4" />
-                Traders
-              </a>
+            <Link href="/traders" className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              Traders
             </Link>
-            <Link href="/signals">
-              <a className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
-                <Zap className="w-4 h-4" />
-                Signals
-              </a>
+            <Link href="/signals" className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
+              <Zap className="w-4 h-4" />
+              Signals
             </Link>
-            <Link href="/bots">
-              <a className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
-                <Cpu className="w-4 h-4" />
-                Bots
-              </a>
+            <Link href="/bots" className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
+              <Cpu className="w-4 h-4" />
+              Bots
             </Link>
-            <Link href="/trading">
-              <a className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
-                <TrendingUp className="w-4 h-4" />
-                Trade
-              </a>
+            <Link href="/trading" className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" />
+              Trade
             </Link>
           </div>
 
