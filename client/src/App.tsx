@@ -12,6 +12,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
+import AssetDetail from "./pages/AssetDetail";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -20,6 +21,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/markets" component={Markets} />
+        <Route path="/asset/:id" component={AssetDetail} />
         <Route path="/trading" component={Trading} />
         <Route path="/traders" component={Traders} />
         <Route path="/signals" component={Signals} />

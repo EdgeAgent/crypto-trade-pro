@@ -1,128 +1,55 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../_core/trpc";
 
-// Copy Trading System
+export type TraderRecord = {
+  id: string;
+  name: string;
+  strategy: string;
+  winRate: number;
+  monthlyReturn: number;
+  followers: number;
+  reputation: number;
+  totalTrades: number;
+  isFollowing: boolean;
+};
+
+export type CopyRecord = {
+  id: string;
+  traderId: string;
+  symbol: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+  pnl: number;
+  status: string;
+};
+
+const unavailable = (message: string): never => {
+  throw new TRPCError({ code: "PRECONDITION_FAILED", message });
+};
+
 export const copyTradingRouter = router({
-  // Get list of top traders
-  getTopTraders: protectedProcedure.query(async ({ ctx }) => {
-    return {
-      traders: [
-        {
-          id: "trader-1",
-          name: "VolumeAnalyst",
-          strategy: "Technical Analysis",
-          winRate: 71,
-          monthlyReturn: 31.2,
-          followers: 8950,
-          reputation: 4.5,
-          totalTrades: 428,
-          isFollowing: false,
-        },
-        {
-          id: "trader-2",
-          name: "CryptoMaster",
-          strategy: "Scalping",
-          winRate: 68,
-          monthlyReturn: 24.5,
-          followers: 5420,
-          reputation: 4.3,
-          totalTrades: 342,
-          isFollowing: false,
-        },
-        {
-          id: "trader-3",
-          name: "TrendFollower",
-          strategy: "Swing Trading",
-          winRate: 62,
-          monthlyReturn: 18.3,
-          followers: 3120,
-          reputation: 4.0,
-          totalTrades: 215,
-          isFollowing: false,
-        },
-      ],
-    };
-  }),
+  getTopTraders: protectedProcedure.query(async () => ({
+    traders: [] as TraderRecord[],
+    status: "awaiting-provider" as const,
+    message: "No live trader registry is connected. Trader profiles are not fabricated in this workspace.",
+  })),
 
-  // Follow a trader
-  followTrader: protectedProcedure
-    .input(z.object({ traderId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      return {
-        success: true,
-        message: `You are now following trader ${input.traderId}`,
-      };
-    }),
+  followTrader: protectedProcedure.input(z.object({ traderId: z.string().min(1) })).mutation(async () => unavailable("Following is unavailable until a persistent trader registry is connected.")),
 
-  // Unfollow a trader
-  unfollowTrader: protectedProcedure
-    .input(z.object({ traderId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      return {
-        success: true,
-        message: `You have unfollowed trader ${input.traderId}`,
-      };
-    }),
+  unfollowTrader: protectedProcedure.input(z.object({ traderId: z.string().min(1) })).mutation(async () => unavailable("Unfollowing is unavailable until a persistent trader registry is connected.")),
 
-  // Copy a trade
-  copyTrade: protectedProcedure
-    .input(
-      z.object({
-        traderId: z.string(),
-        tradeId: z.string(),
-        quantity: z.number().positive(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      return {
-        success: true,
-        copyId: Math.random().toString(36).substr(2, 9),
-        message: `Trade copied from ${input.traderId}`,
-      };
-    }),
+  copyTrade: protectedProcedure.input(z.object({ traderId: z.string().min(1), tradeId: z.string().min(1), quantity: z.number().positive() })).mutation(async () => unavailable("Copy execution is blocked until a verified trader feed, broker, risk policy, and explicit order confirmation are connected.")),
 
-  // Get my active copies
-  getActiveCopies: protectedProcedure.query(async ({ ctx }) => {
-    return {
-      copies: [
-        {
-          id: "copy-1",
-          traderId: "trader-1",
-          traderName: "VolumeAnalyst",
-          symbol: "BTC",
-          side: "BUY",
-          quantity: 0.5,
-          entryPrice: 62715,
-          currentPrice: 62715,
-          pnl: 0,
-          pnlPercent: 0,
-          status: "ACTIVE",
-          copiedAt: new Date(Date.now() - 3600000),
-        },
-      ],
-    };
-  }),
+  getActiveCopies: protectedProcedure.query(async () => ({
+    copies: [] as CopyRecord[],
+    status: "awaiting-provider" as const,
+    message: "No broker-linked copied positions are available.",
+  })),
 
-  // Get copy history
-  getCopyHistory: protectedProcedure.query(async ({ ctx }) => {
-    return {
-      history: [
-        {
-          id: "copy-hist-1",
-          traderId: "trader-1",
-          traderName: "VolumeAnalyst",
-          symbol: "ETH",
-          side: "SELL",
-          quantity: 2,
-          entryPrice: 1811.7,
-          exitPrice: 1850,
-          pnl: 76.6,
-          pnlPercent: 2.1,
-          status: "CLOSED",
-          copiedAt: new Date(Date.now() - 86400000),
-          closedAt: new Date(Date.now() - 43200000),
-        },
-      ],
-    };
-  }),
+  getCopyHistory: protectedProcedure.query(async () => ({
+    history: [],
+    status: "awaiting-provider" as const,
+    message: "No persisted copy-trade history is available.",
+  })),
 });

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { TrendingUp, TrendingDown, Search } from "lucide-react";
@@ -97,7 +98,8 @@ export default function Markets() {
             {filteredCoins.map((coin) => {
               const trend = coin.price_change_percentage_24h >= 0;
               return (
-                <Card key={coin.id} className="bg-card border-border/50 hover:border-accent/50 transition-colors cursor-pointer">
+                  <Link key={coin.id} href={`/asset/${coin.id}`} className="block">
+                  <Card className="bg-card border-border/50 hover:border-accent/50 transition-colors cursor-pointer">
                   <div className="p-4">
                     <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
                       <div className="flex items-center gap-3">
@@ -135,8 +137,9 @@ export default function Markets() {
                       </div>
                     </div>
                   </div>
-                </Card>
-              );
+                  </Card>
+                  </Link>
+                );
             })}
           </div>
         )}

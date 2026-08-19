@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CandlestickChart from "@/components/CandlestickChart";
 import OrderBook from "@/components/OrderBook";
+import RecentTrades from "@/components/RecentTrades";
 import { trpc } from "@/lib/trpc";
 
 type TradeSide = "BUY" | "SELL";
@@ -88,6 +89,10 @@ export default function Trading() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <CandlestickChart symbol="BTC" price={62715} change24h={-2.46} />
           <OrderBook symbol="BTC" />
+        </div>
+
+        <div className="mb-8">
+          <RecentTrades symbol="btcusdt" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

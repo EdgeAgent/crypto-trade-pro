@@ -13,20 +13,20 @@
 - [x] Multiple timeframe selector (1H, 4H, 1D, 1W)
 - [ ] Technical indicators (RSI, MACD, Bollinger Bands)
 - [x] Order book display with bid/ask depth
-- [ ] Recent trades panel
+- [x] Recent trades panel
 - [x] Advanced search with filters
-- [ ] Asset detail pages with comprehensive stats
+- [x] Asset detail pages with comprehensive stats
 - [x] Responsive mobile-first design
 - [x] Smooth animations and transitions
 
 ## Phase 3: Live Trader & Copy Trading (from AI-Trader)
 - [x] Trader discovery and search
-- [x] Trader leaderboard (by win rate, returns, followers)
+- [ ] Trader leaderboard (by win rate, returns, followers) — pending live trader registry
 - [ ] Trader profile pages with performance metrics
 - [x] One-click copy trading UI
 - [ ] Active copies dashboard
 - [ ] Copy trade history and performance tracking
-- [x] Follower/reputation system
+- [ ] Follower/reputation system — pending persistent trader registry
 - [ ] Trader signal publishing
 - [ ] Signal feed with real-time updates
 
@@ -53,9 +53,9 @@
 - [ ] Order status updates
 
 ## Phase 6: Strategy Bot Deployment
-- [ ] Bot creation UI
-- [ ] Strategy parameter configuration
-- [ ] Bot status management (active/paused/stopped)
+- [x] Bot creation UI
+- [x] Strategy parameter configuration
+- [x] Bot status management (active/paused/stopped)
 - [ ] Backtesting framework
 - [ ] Performance metrics dashboard
 - [ ] Bot execution logs
@@ -85,7 +85,7 @@
 - [ ] Tax reporting (optional)
 
 ## Phase 9: Scalability & Performance
-- [ ] WebSocket for real-time data
+- [x] WebSocket for real-time data (verified scope: Binance recent-trades and order-book streams)
 - [ ] Redis caching layer
 - [ ] Database indexing optimization
 - [ ] Load balancing
@@ -142,16 +142,16 @@
 - [ ] Inngest API
 - [ ] Binance API (live trading)
 - [ ] Coinbase API (live trading)
-- [ ] WebSocket connections
+- [x] WebSocket connections (verified scope: shared resilient service used by trades and order book)
 - [ ] Redis connection
 
 ## UI Components to Build
-- [ ] Trader Discovery component
-- [ ] Copy Trading Dashboard
-- [ ] Signal Feed component
-- [ ] Bot Builder interface
-- [ ] Advanced Charts
-- [ ] Order Book component
+- [x] Trader Discovery component
+- [x] Copy Trading Dashboard (staged plans and honest broker-unavailable state)
+- [x] Signal Feed component (provider-backed empty state until a signal provider is connected)
+- [x] Bot Builder interface
+- [x] Advanced Charts
+- [x] Order Book component
 - [x] GO LIVE Switch toggle
 - [x] Risk Dashboard
 - [ ] Performance Analytics
@@ -202,3 +202,42 @@
 - [x] Send explicitConfirmation only after the per-order dialog is accepted
 - [x] Add procedure-level tests for trading.placeLiveMarketOrder rejection paths
 - [x] Verify missing broker credentials, invalid daily loss state, and missing confirmation at the tRPC boundary
+
+
+## Live Data Resilience Gaps
+- [x] Implement a reusable live-data WebSocket hook with reconnect and exponential backoff
+- [x] Wire resilient streaming beyond the recent-trades tape, including selected-pair market updates or order book state
+- [x] Add tests for live-stream connecting, live, offline, and recovery states
+- [x] Narrow completion claims to verified live-stream scope until resilient coverage is implemented
+
+
+## WebSocket Verification Follow-up
+- [x] Refactor exchange streaming into one reusable WebSocket service shared by trades and order book
+- [x] Add deterministic tests for offline/error and reconnect/recovery transitions
+- [x] Narrow broad WebSocket checklist claims to the verified implementation scope
+
+
+## Component Verification Follow-up
+- [x] Build and wire a dedicated TraderDiscovery component
+- [ ] Implement a CopyTradingDashboard for followed traders, active copied positions, and performance
+- [x] Replace mock signal data with backend-driven signal state and extract a SignalFeed component with loading/error/empty states
+- [x] Implement and verify a BotBuilder interface with strategy selection, parameters, validation, and lifecycle controls
+
+
+## Scope Corrections
+- [x] CopyTradingDashboard is explicitly presented as staged copy plans until broker-linked positions exist
+- [ ] Full active copied positions and performance attribution remain pending
+- [x] Bot lifecycle requirement completed with staged, active, paused, and stopped states
+
+## Copy and Bot Lifecycle Verification Gaps
+- [x] Relabel copy dashboard metrics as staged-plan status unless real copied positions are available
+- [x] Add explicit copied-position and performance data structures with honest empty states
+- [x] Add a distinct stopped bot lifecycle state and controls
+- [x] Add tests for copied-position/performance empty states and active/paused/stopped bot transitions
+
+
+## Live Trader Data Integrity Gaps
+- [x] Remove static trader, active-copy, and copy-history records from the copy-trading server router
+- [x] Make TraderDiscovery provider-backed with an honest unavailable/empty state when no live trader registry is connected
+- [x] Prevent copy/follow mutations from reporting success when no persistence or broker execution provider is connected
+- [x] Add tests proving static trader data is not returned and unconfigured copy actions are rejected
