@@ -154,7 +154,7 @@
 - [x] Order Book component
 - [x] GO LIVE Switch toggle
 - [x] Risk Dashboard
-- [ ] Performance Analytics
+- [x] Performance analytics
 - [x] Settings panel
 
 
@@ -297,3 +297,31 @@
 ## Indicator Browser-Equivalent Verification
 - [x] Assert live indicator chart markup includes stable main, RSI, and MACD dimensions after ComposedChart fix
 - [x] Reconfirm the two visual-verification items using passing component assertions and real-browser page evidence recorded in verification_live_chart_browser.md
+
+
+## Performance Analytics Honesty Follow-up
+- [x] Derive win rate, volume, and P&L from actual user trade history or broker state
+- [x] Render honest unavailable or zero states when no trade history exists
+- [x] Add unit coverage for computed analytics derivation
+
+
+## Performance Analytics Data-Wiring Follow-up
+- [x] Wire PerformanceAnalytics to tRPC trade history on the Risk Dashboard / Settings
+- [x] Render honest empty states when trade history is empty
+
+
+## Trading Router Trade History Query
+- [x] Add getTradeHistory query to trading router
+- [x] Wire PerformanceAnalytics in Settings to trading.getTradeHistory
+
+
+## Production Trade Query & Provider Safety Follow-up
+- [x] Replace mock trade history with honest empty state or persisted records
+- [x] Remove render-time try/catch tRPC wrapper and handle loading/error states properly
+- [x] Connect broker connection state to PerformanceAnalytics brokerConnected prop
+
+
+## Performance Analytics & Settings Integration Gaps
+- [x] Create PerformanceAnalytics component with real computed win-rate, volume, and P&L from trade records
+- [x] Add getTradeHistory query to trading router
+- [x] Wire PerformanceAnalytics in Settings with safe query handling and test coverage

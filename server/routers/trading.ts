@@ -50,6 +50,11 @@ export const tradingRouter = router({
       };
     }),
 
+  // Get user trade history (honestly empty until trades are executed)
+  getTradeHistory: protectedProcedure.query(async ({ ctx }) => {
+    return [] as Array<{ id: string; side: "BUY" | "SELL"; price: number; quantity: number; realizedPnl: number; timestamp: number }>;
+  }),
+
   // Place a limit order
   placeLimitOrder: protectedProcedure
     .input(

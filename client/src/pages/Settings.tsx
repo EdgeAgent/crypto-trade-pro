@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import GoLiveSwitch from "@/components/GoLiveSwitch";
 import RiskDashboard from "@/components/RiskDashboard";
+import PerformanceAnalytics from "@/components/PerformanceAnalytics";
+import { trpc } from "@/lib/trpc";
 
 type Broker = "binance" | "coinbase" | "kraken";
 
@@ -143,6 +145,8 @@ export default function Settings() {
           maxPositionSize={Number(maxPositionSize) || 0}
         />
 
+        <PerformanceAnalyticsBrokerSection />
+
         <Card className="border-border/50 bg-card">
           <div className="p-6">
             <div className="flex items-start justify-between gap-4">
@@ -248,6 +252,24 @@ export default function Settings() {
       </div>
     </div>
   );
+}
+
+function PerformanceAnalyticsBrokerSection() {
+  let trades: Array<{ id: string; side: "BUY" | "SELL"; price: number; quantity: number; realizedPnl?: number; timestamp: number }> = [];
+  try {
+    const tradesQuery = trpc.trading.getTradeHistory.useQuery(undefined, { retry: false, refetchOnWindowFocus: false, enabled: false });
+    trades = (tradesQuery.data ?? []).map((t) => ({
+      id: String(t.id),
+      side: t.side,
+      price: Number(t.price),
+      quantity: Number(t.quantity),
+      realizedPnl: Number(t.realizedPnl),
+      timestamp: Number(t.timestamp),
+    }));
+  } catch {
+    trades = [];
+  }
+  return <PerformanceAnalytics brokerConnected={false} trades={trades} />;
 }
 
 export { modelOptions };
