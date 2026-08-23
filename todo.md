@@ -443,3 +443,6 @@
 
 ## Transport Header Verification
 - [x] Add deterministic tests for production and development HTTP security-header policy
+
+## GitHub Export
+- [ ] Export the current project to a private GitHub repository and verify the pushed commit
