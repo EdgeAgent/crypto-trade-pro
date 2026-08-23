@@ -118,13 +118,13 @@
 
 ## Phase 12: Documentation & Deployment
 - [ ] API documentation
-- [ ] User guide
-- [ ] Developer guide
-- [ ] Deployment guide
-- [ ] Architecture documentation
-- [ ] Database schema documentation
-- [ ] Environment setup guide
-- [ ] Troubleshooting guide
+- [x] User guide
+- [x] Developer guide
+- [x] Deployment guide
+- [x] Architecture documentation
+- [x] Database schema documentation — dedicated table/relationship/index reference in docs/DATABASE_SCHEMA.md
+- [x] Environment setup guide
+- [x] Troubleshooting guide
 
 ## Database Schema Extensions
 - [x] traders table
@@ -419,3 +419,10 @@
 ## Paper Ledger Follow-up
 - [x] Implement paper order modification for eligible open limit orders, with validation, persistence, UI controls, and tests
 - [x] Expand paper trade history into a detailed execution log and render it with honest loading/empty/error states
+
+## Documentation Milestone
+- [x] Write the current architecture and data-flow guide
+- [x] Write the user guide for paper trading, signals, copy plans, bots, and live-readiness gates
+- [x] Write developer and environment setup guidance
+- [x] Write deployment and troubleshooting guidance
+- [x] Write dedicated database schema documentation covering current tables, key columns, relationships, indexes, and feature dependencies
