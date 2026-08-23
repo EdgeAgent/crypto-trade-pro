@@ -1,59 +1,31 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navigation from "@/components/Navigation";
-import NotFound from "@/pages/NotFound";
-import Markets from "@/pages/Markets";
-import Trading from "@/pages/Trading";
-import Traders from "@/pages/Traders";
-import Signals from "@/pages/Signals";
-import Bots from "@/pages/Bots";
+import { lazy, Suspense } from "react";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
-import Settings from "./pages/Settings";
-import AssetDetail from "./pages/AssetDetail";
+
+const Home = lazy(() => import("./pages/Home"));
+const Markets = lazy(() => import("./pages/Markets"));
+const AssetDetail = lazy(() => import("./pages/AssetDetail"));
+const Trading = lazy(() => import("./pages/Trading"));
+const Traders = lazy(() => import("./pages/Traders"));
+const Signals = lazy(() => import("./pages/Signals"));
+const Bots = lazy(() => import("./pages/Bots"));
+const Settings = lazy(() => import("./pages/Settings"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+function RouteLoading() {
+  return <div className="flex min-h-[50vh] items-center justify-center px-4 text-sm text-muted-foreground" role="status" aria-live="polite">Loading workspace…</div>;
+}
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
-  return (
-    <div className="min-h-screen bg-background">
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/markets" component={Markets} />
-        <Route path="/asset/:id" component={AssetDetail} />
-        <Route path="/trading" component={Trading} />
-        <Route path="/traders" component={Traders} />
-        <Route path="/signals" component={Signals} />
-        <Route path="/bots" component={Bots} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/404" component={NotFound} />
-        {/* Final fallback route */}
-        <Route component={NotFound} />
-      </Switch>
-    </div>
-  );
+  return <div className="min-h-screen bg-background"><Suspense fallback={<RouteLoading />}><Switch><Route path="/" component={Home} /><Route path="/markets" component={Markets} /><Route path="/asset/:id" component={AssetDetail} /><Route path="/trading" component={Trading} /><Route path="/traders" component={Traders} /><Route path="/signals" component={Signals} /><Route path="/bots" component={Bots} /><Route path="/settings" component={Settings} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch></Suspense></div>;
 }
 
 function App() {
-  // NOTE: About Theme
-  // - Dark theme with cyan accents for premium trading platform experience
-  // - OKLCH color space for better color representation
-  // - Theme is now set to dark by default
-  return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="dark"
-        // switchable
-      >
-        <TooltipProvider>
-          <Navigation />
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark"><TooltipProvider><Navigation /><Toaster /><Router /></TooltipProvider></ThemeProvider></ErrorBoundary>;
 }
 
 export default App;

@@ -325,3 +325,24 @@
 - [x] Create PerformanceAnalytics component with real computed win-rate, volume, and P&L from trade records
 - [x] Add getTradeHistory query to trading router
 - [x] Wire PerformanceAnalytics in Settings with safe query handling and test coverage
+
+
+## Production-Ready Mobile & Viral UI Upgrade
+- [x] Audit all primary routes at phone and desktop breakpoints for overflow, tap targets, fixed navigation, and loading/error states
+- [x] Add production-friendly mobile navigation with accessible focus and safe-area spacing
+- [x] Make dashboard, markets, trading, traders, signals, bots, and settings layouts phone-friendly without horizontal overflow
+- [x] Add production hardening for user-facing errors, live-data connection states, and disabled live-trading controls
+- [x] Refresh the visual identity with distinctive viral/shareable hero treatment, live-status storytelling, and polished micro-interactions
+- [x] Add responsive component tests for mobile-critical layout contracts and safety-state copy
+- [x] Verify desktop and mobile routes in the browser and save a new checkpoint
+
+
+## Responsive Regression Coverage
+- [x] Assert navigation exposes mobile menu, Settings, and safe paper-mode copy
+- [x] Assert holdings and watchlist do not render seeded or random portfolio data
+- [x] Assert trading page exposes guarded execution and mobile-sized form contracts; backed by responsiveTrading.test.ts
+
+
+## Final Production Verification Gaps
+- [x] Add responsive Trading assertions for guarded live execution and touch-sized form controls
+- [ ] Save a checkpoint for the production-ready mobile and visual refresh milestone
