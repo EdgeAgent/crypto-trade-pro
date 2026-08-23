@@ -3,6 +3,10 @@ import { drizzle } from "drizzle-orm/mysql2";
 import {
   auditLogs,
   copyTrades,
+  paperAccounts,
+  paperFills,
+  paperOrders,
+  paperPositions,
   InsertAuditLog,
   InsertCopyTrade,
   InsertTradingBot,
@@ -172,7 +176,94 @@ export async function listAuditLogsForUser(userId: number) {
 export async function listTradeHistoryForUser(userId: number) {
   const db = await getDb();
   if (!db) return [];
-  // The legacy trades table remains the source for executed trade history.
-  const [rows] = await db.execute(sql`SELECT * FROM trades WHERE userId = ${userId} ORDER BY timestamp DESC`);
-  return Array.isArray(rows) ? rows : [];
+  return db.select().from(paperFills).where(eq(paperFills.userId, userId)).orderBy(desc(paperFills.createdAt));
+}
+
+function fixed8(value: number) {
+  return value.toFixed(8);
+}
+
+export async function getPaperAccountForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(paperAccounts).where(eq(paperAccounts.userId, userId)).limit(1);
+  return result[0];
+}
+
+export async function fundPaperAccountForUser(userId: number, amount: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  return db.transaction(async (tx) => {
+    await tx.insert(paperAccounts).values({ userId, cashBalance: "0" }).onDuplicateKeyUpdate({ set: { userId } });
+    await tx.update(paperAccounts).set({ cashBalance: sql`${paperAccounts.cashBalance} + ${fixed8(amount)}` }).where(eq(paperAccounts.userId, userId));
+    const rows = await tx.select().from(paperAccounts).where(eq(paperAccounts.userId, userId)).limit(1);
+    return rows[0];
+  });
+}
+
+export type PaperOrderInput = { symbol: string; side: "BUY" | "SELL"; orderType: "market" | "limit"; quantity: number; price?: number; limitPrice?: number };
+
+export async function createPaperOrderForUser(userId: number, input: PaperOrderInput) {
+  const db = await getDb();
+  if (!db) return undefined;
+  return db.transaction(async (tx) => {
+    await tx.insert(paperAccounts).values({ userId, cashBalance: "0" }).onDuplicateKeyUpdate({ set: { userId } });
+    const [account] = await tx.select().from(paperAccounts).where(eq(paperAccounts.userId, userId)).limit(1);
+    const [position] = await tx.select().from(paperPositions).where(and(eq(paperPositions.userId, userId), eq(paperPositions.symbol, input.symbol))).limit(1);
+    const currentCash = Number(account?.cashBalance ?? 0);
+    const currentQuantity = Number(position?.quantity ?? 0);
+    const currentAverage = Number(position?.averageEntryPrice ?? 0);
+    const executionPrice = input.orderType === "market" ? input.price : undefined;
+    const notional = executionPrice ? input.quantity * executionPrice : (input.limitPrice ?? 0) * input.quantity;
+    if (!Number.isFinite(notional) || notional <= 0) throw new Error("A positive execution or limit price is required.");
+    if (input.side === "BUY" && currentCash < notional) throw new Error("Insufficient paper cash. Fund the paper account before buying.");
+    if (input.side === "SELL" && currentQuantity < input.quantity) throw new Error("Insufficient paper position for this sell order.");
+    const status = executionPrice ? "filled" : "open";
+    const [inserted] = await tx.insert(paperOrders).values({ userId, symbol: input.symbol, side: input.side, orderType: input.orderType, quantity: fixed8(input.quantity), limitPrice: input.limitPrice ? fixed8(input.limitPrice) : null, executedQuantity: executionPrice ? fixed8(input.quantity) : "0", averageFillPrice: executionPrice ? fixed8(executionPrice) : null, status }).$returningId();
+    const orderId = Number(inserted.id);
+    if (!executionPrice) {
+      const [created] = await tx.select().from(paperOrders).where(eq(paperOrders.id, orderId)).limit(1);
+      return created;
+    }
+    const realizedPnl = input.side === "SELL" ? (executionPrice - currentAverage) * input.quantity : 0;
+    await tx.insert(paperFills).values({ orderId, userId, symbol: input.symbol, side: input.side, quantity: fixed8(input.quantity), price: fixed8(executionPrice), realizedPnl: fixed8(realizedPnl) });
+    if (input.side === "BUY") {
+      const newQuantity = currentQuantity + input.quantity;
+      const newAverage = newQuantity > 0 ? ((currentQuantity * currentAverage) + notional) / newQuantity : executionPrice;
+      await tx.insert(paperPositions).values({ userId, symbol: input.symbol, quantity: fixed8(newQuantity), averageEntryPrice: fixed8(newAverage), realizedPnl: "0" }).onDuplicateKeyUpdate({ set: { quantity: fixed8(newQuantity), averageEntryPrice: fixed8(newAverage) } });
+      await tx.update(paperAccounts).set({ cashBalance: sql`${paperAccounts.cashBalance} - ${fixed8(notional)}` }).where(eq(paperAccounts.userId, userId));
+    } else {
+      const newQuantity = currentQuantity - input.quantity;
+      await tx.update(paperPositions).set({ quantity: fixed8(newQuantity), averageEntryPrice: newQuantity > 0 ? fixed8(currentAverage) : "0", realizedPnl: sql`${paperPositions.realizedPnl} + ${fixed8(realizedPnl)}` }).where(and(eq(paperPositions.userId, userId), eq(paperPositions.symbol, input.symbol)));
+      await tx.update(paperAccounts).set({ cashBalance: sql`${paperAccounts.cashBalance} + ${fixed8(notional)}` }).where(eq(paperAccounts.userId, userId));
+    }
+    const [created] = await tx.select().from(paperOrders).where(eq(paperOrders.id, orderId)).limit(1);
+    return created;
+  });
+}
+
+export async function modifyPaperOrderForUser(userId: number, orderId: number, quantity: number, limitPrice: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.update(paperOrders).set({ quantity: fixed8(quantity), limitPrice: fixed8(limitPrice) }).where(and(eq(paperOrders.id, orderId), eq(paperOrders.userId, userId), eq(paperOrders.orderType, "limit"), eq(paperOrders.status, "open")));
+  return result[0]?.affectedRows === 1;
+}
+
+export async function cancelPaperOrderForUser(userId: number, orderId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.update(paperOrders).set({ status: "cancelled" }).where(and(eq(paperOrders.id, orderId), eq(paperOrders.userId, userId), eq(paperOrders.status, "open")));
+  return result[0]?.affectedRows === 1;
+}
+
+export async function listPaperOrdersForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(paperOrders).where(eq(paperOrders.userId, userId)).orderBy(desc(paperOrders.createdAt));
+}
+
+export async function listPaperPositionsForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(paperPositions).where(eq(paperPositions.userId, userId)).orderBy(desc(paperPositions.updatedAt));
 }

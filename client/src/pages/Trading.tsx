@@ -29,7 +29,21 @@ export default function Trading() {
   const [price, setPrice] = useState("");
   const [confirmLiveOrder, setConfirmLiveOrder] = useState(false);
   const [liveOrderStatus, setLiveOrderStatus] = useState<string | null>(null);
+  const [fundAmount, setFundAmount] = useState("");
+  const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
+  const [editQuantity, setEditQuantity] = useState("");
+  const [editLimitPrice, setEditLimitPrice] = useState("");
 
+  const utils = trpc.useUtils();
+  const paperAccountQuery = trpc.trading.getPaperAccount.useQuery(undefined, { retry: false });
+  const paperOrdersQuery = trpc.trading.getPendingOrders.useQuery(undefined, { retry: false });
+  const paperPositionsQuery = trpc.trading.getPositions.useQuery(undefined, { retry: false });
+  const paperTradesQuery = trpc.trading.getTradeHistory.useQuery(undefined, { retry: false });
+  const fundPaperAccountMutation = trpc.trading.fundPaperAccount.useMutation({ onSuccess: () => { setFundAmount(""); void utils.trading.getPaperAccount.invalidate(); } });
+  const marketOrderMutation = trpc.trading.placeMarketOrder.useMutation({ onSuccess: () => { void Promise.all([utils.trading.getPaperAccount.invalidate(), utils.trading.getPositions.invalidate(), utils.trading.getTradeHistory.invalidate()]); } });
+  const limitOrderMutation = trpc.trading.placeLimitOrder.useMutation({ onSuccess: () => { void utils.trading.getPendingOrders.invalidate(); } });
+  const modifyOrderMutation = trpc.trading.modifyOrder.useMutation({ onSuccess: () => { setEditingOrderId(null); void utils.trading.getPendingOrders.invalidate(); } });
+  const cancelOrderMutation = trpc.trading.cancelOrder.useMutation({ onSuccess: () => { void utils.trading.getPendingOrders.invalidate(); } });
   const liveOrderMutation = trpc.trading.placeLiveMarketOrder.useMutation();
   const symbol = symbols[selectedCoin] ?? "BTC/USDT";
   const streamSymbol = symbol.replace("/", "").toLowerCase();
@@ -45,16 +59,57 @@ export default function Trading() {
     return numericQuantity * parsedPrice;
   }, [currentPrice, hasValidQuantity, numericQuantity, orderType, price]);
 
-  const handlePlacePaperOrder = () => {
+  const handlePlacePaperOrder = async () => {
     if (!hasValidQuantity) {
-      setLiveOrderStatus("Enter a quantity greater than zero before staging this paper order.");
+      setLiveOrderStatus("Enter a quantity greater than zero before placing this paper order.");
+      return;
+    }
+    if (orderType === "market" && currentPrice <= 0) {
+      setLiveOrderStatus("A live quote is required before a paper market order can fill.");
       return;
     }
     if (orderType === "limit" && (!Number.isFinite(Number(price)) || Number(price) <= 0)) {
-      setLiveOrderStatus("Enter a limit price greater than zero before staging this paper order.");
+      setLiveOrderStatus("Enter a limit price greater than zero before placing this paper order.");
       return;
     }
-    setLiveOrderStatus(`Paper ${tradeSide.toLowerCase()} order staged for review: ${quantity} ${symbol}. No order was sent to a broker.`);
+    try {
+      const result = orderType === "market"
+        ? await marketOrderMutation.mutateAsync({ symbol, side: tradeSide, quantity: numericQuantity, price: currentPrice })
+        : await limitOrderMutation.mutateAsync({ symbol, side: tradeSide, quantity: numericQuantity, limitPrice: Number(price) });
+      setLiveOrderStatus(`${result.message} Order ${result.id}.`);
+    } catch (error) {
+      setLiveOrderStatus(error instanceof Error ? error.message : "Paper order was rejected.");
+    }
+  };
+
+  const handleModifyOrder = async () => {
+    if (!editingOrderId) return;
+    const nextQuantity = Number(editQuantity);
+    const nextPrice = Number(editLimitPrice);
+    if (!Number.isFinite(nextQuantity) || nextQuantity <= 0 || !Number.isFinite(nextPrice) || nextPrice <= 0) {
+      setLiveOrderStatus("Enter positive quantity and limit price values before saving the order.");
+      return;
+    }
+    try {
+      await modifyOrderMutation.mutateAsync({ orderId: editingOrderId, quantity: nextQuantity, limitPrice: nextPrice });
+      setLiveOrderStatus(`Paper limit order ${editingOrderId} updated.`);
+    } catch (error) {
+      setLiveOrderStatus(error instanceof Error ? error.message : "Paper order could not be modified.");
+    }
+  };
+
+  const handleFundPaperAccount = async () => {
+    const amount = Number(fundAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setLiveOrderStatus("Enter a positive amount to fund the paper account.");
+      return;
+    }
+    try {
+      const result = await fundPaperAccountMutation.mutateAsync({ amount });
+      setLiveOrderStatus(`Paper account funded with $${amount.toFixed(2)}. New cash balance: $${result.cashBalance.toFixed(2)}.`);
+    } catch (error) {
+      setLiveOrderStatus(error instanceof Error ? error.message : "Paper account funding failed.");
+    }
   };
 
   const handleLiveOrderRequest = () => {
@@ -89,6 +144,12 @@ export default function Trading() {
           </div>
 
           <Card className="surface-glow border-white/10 bg-card/80"><div className="p-5 sm:p-6"><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Paper desk</p><h2 className="mt-1 text-lg font-bold text-foreground">Place order</h2></div><span className={`text-xs font-semibold ${ticker.status === "live" ? "text-green-400" : "text-amber-400"}`}>{ticker.status === "live" ? "Live quote" : ticker.status}</span></div><Tabs value={tradeSide.toLowerCase()} onValueChange={(value) => setTradeSide(value === "sell" ? "SELL" : "BUY")}><TabsList className="mt-5 grid h-11 w-full grid-cols-2"><TabsTrigger value="buy">Buy</TabsTrigger><TabsTrigger value="sell">Sell</TabsTrigger></TabsList>{(["buy", "sell"] as const).map((side) => <TabsContent key={side} value={side} className="mt-5 space-y-4"><div><div className="flex items-center justify-between"><label htmlFor="coin" className="text-sm font-semibold text-foreground">Coin</label><span className="text-xs text-muted-foreground">{ticker.status}</span></div><select id="coin" value={selectedCoin} onChange={(event) => setSelectedCoin(event.target.value)} className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-background/60 px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"><option value="bitcoin">Bitcoin (BTC)</option><option value="ethereum">Ethereum (ETH)</option><option value="cardano">Cardano (ADA)</option></select></div><div><label htmlFor="order-type" className="text-sm font-semibold text-foreground">Order type</label><select id="order-type" value={orderType} onChange={(event) => setOrderType(event.target.value as OrderType)} className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-background/60 px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"><option value="market">Market</option><option value="limit">Limit</option></select></div><div><label htmlFor="quantity" className="text-sm font-semibold text-foreground">Quantity</label><Input id="quantity" type="number" min="0" step="any" inputMode="decimal" placeholder="0.00" value={quantity} onChange={(event) => setQuantity(event.target.value)} className="mt-2 min-h-12 border-white/10 bg-background/60" /></div>{orderType === "limit" && <div><label htmlFor="price" className="text-sm font-semibold text-foreground">Limit price</label><Input id="price" type="number" min="0" step="any" inputMode="decimal" placeholder="0.00" value={price} onChange={(event) => setPrice(event.target.value)} className="mt-2 min-h-12 border-white/10 bg-background/60" /></div>}<Button className={`touch-target min-h-11 w-full ${side === "buy" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"} text-white`} onClick={handlePlacePaperOrder}><CheckCircle2 className="mr-2 h-4 w-4" />Stage paper {side} order</Button></TabsContent>)}</Tabs></div></Card>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <Card className="border-white/10 bg-card/80"><div className="p-5 sm:p-6"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Paper account</p><p className="mt-2 text-3xl font-bold text-foreground">${(paperAccountQuery.data?.cashBalance ?? 0).toFixed(2)}</p><p className="mt-1 text-sm text-muted-foreground">Explicitly funded cash balance. No starting balance is created automatically.</p><div className="mt-4 flex gap-2"><Input aria-label="Fund paper account amount" type="number" min="0" step="any" inputMode="decimal" placeholder="Amount" value={fundAmount} onChange={(event) => setFundAmount(event.target.value)} className="min-h-11 border-white/10 bg-background/60" /><Button type="button" className="min-h-11 shrink-0 bg-cyan-500 text-slate-950 hover:bg-cyan-400" onClick={handleFundPaperAccount} disabled={fundPaperAccountMutation.isPending}>Fund</Button></div></div></Card>
+          <Card className="border-white/10 bg-card/80"><div className="p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Open limits</p><h2 className="mt-1 text-lg font-bold text-foreground">Pending orders</h2></div><span className="text-sm text-muted-foreground">{paperOrdersQuery.data?.orders.length ?? 0}</span></div><div className="mt-4 space-y-2">{paperOrdersQuery.data?.orders.length ? paperOrdersQuery.data.orders.map((order) => <div key={order.id} className="rounded-xl border border-white/10 bg-background/40 p-3 text-sm"><div className="flex items-center justify-between gap-3"><div><p className="font-semibold text-foreground">{order.side} {order.quantity} {order.symbol}</p><p className="text-muted-foreground">Limit ${order.limitPrice.toFixed(2)}</p></div><div className="flex gap-2"><Button type="button" variant="outline" className="min-h-10" onClick={() => { setEditingOrderId(order.id); setEditQuantity(String(order.quantity)); setEditLimitPrice(String(order.limitPrice)); }} disabled={modifyOrderMutation.isPending}>Edit</Button><Button type="button" variant="outline" className="min-h-10" onClick={() => cancelOrderMutation.mutate({ orderId: order.id })} disabled={cancelOrderMutation.isPending}>Cancel</Button></div></div>{editingOrderId === order.id && <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3"><Input aria-label="Edit order quantity" type="number" min="0" step="any" value={editQuantity} onChange={(event) => setEditQuantity(event.target.value)} className="min-h-10 border-white/10 bg-background/60" /><Input aria-label="Edit order limit price" type="number" min="0" step="any" value={editLimitPrice} onChange={(event) => setEditLimitPrice(event.target.value)} className="min-h-10 border-white/10 bg-background/60" /><Button type="button" className="min-h-10 bg-cyan-500 text-slate-950 hover:bg-cyan-400" onClick={handleModifyOrder} disabled={modifyOrderMutation.isPending}>Save</Button></div>}</div>) : <p className="text-sm leading-6 text-muted-foreground">No open paper limit orders.</p>}</div></div></Card>
+          <Card className="border-white/10 bg-card/80"><div className="p-5 sm:p-6"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Ledger snapshot</p><h2 className="mt-1 text-lg font-bold text-foreground">Positions & fills</h2><div className="mt-4 space-y-3">{paperPositionsQuery.data?.positions.length ? paperPositionsQuery.data.positions.map((position) => <div key={position.symbol} className="flex items-center justify-between text-sm"><span className="font-semibold text-foreground">{position.symbol}</span><span className="text-muted-foreground">{position.quantity} @ ${position.entryPrice.toFixed(2)}</span></div>) : <p className="text-sm text-muted-foreground">No open paper positions.</p>}<div className="border-t border-white/10 pt-3"><p className="text-sm text-muted-foreground">{paperTradesQuery.data?.length ?? 0} persisted fills. Market data marks unrealized P&L only when a current quote is available.</p>{paperTradesQuery.data?.length ? <div className="mt-3 space-y-2">{paperTradesQuery.data.slice(0, 5).map((trade) => <div key={trade.id} className="rounded-lg border border-white/5 p-2 text-xs"><div className="flex justify-between gap-2"><span className="font-semibold text-foreground">{trade.side} {trade.quantity} {trade.symbol}</span><span className="text-muted-foreground">{new Date(trade.createdAt).toLocaleString()}</span></div><div className="mt-1 flex justify-between gap-2 text-muted-foreground"><span>Fill ${trade.price.toFixed(2)} · ${trade.totalValue.toFixed(2)}</span><span>Realized ${trade.realizedPnl.toFixed(2)}</span></div></div>)}</div> : null}</div></div></div></Card>
         </div>
       </main>
 

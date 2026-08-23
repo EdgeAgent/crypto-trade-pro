@@ -1,4 +1,4 @@
-import { int, index, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { decimal, int, index, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -129,3 +129,64 @@ export const tradingSignals = mysqlTable("trading_signals", {
 
 export type TradingSignal = typeof tradingSignals.$inferSelect;
 export type InsertTradingSignal = typeof tradingSignals.$inferInsert;
+
+/** User-funded paper account. No balance is created until the user explicitly funds it. */
+export const paperAccounts = mysqlTable("paper_accounts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  cashBalance: decimal("cashBalance", { precision: 24, scale: 8 }).notNull().default("0"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({ userIdx: uniqueIndex("paper_accounts_user_idx").on(table.userId) }));
+
+export type PaperAccount = typeof paperAccounts.$inferSelect;
+export type InsertPaperAccount = typeof paperAccounts.$inferInsert;
+
+/** Persisted paper order lifecycle. Market orders fill immediately at the submitted quote; limits remain open. */
+export const paperOrders = mysqlTable("paper_orders", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  symbol: varchar("symbol", { length: 32 }).notNull(),
+  side: mysqlEnum("side", ["BUY", "SELL"]).notNull(),
+  orderType: mysqlEnum("orderType", ["market", "limit"]).notNull(),
+  quantity: decimal("quantity", { precision: 24, scale: 8 }).notNull(),
+  limitPrice: decimal("limitPrice", { precision: 24, scale: 8 }),
+  executedQuantity: decimal("executedQuantity", { precision: 24, scale: 8 }).notNull().default("0"),
+  averageFillPrice: decimal("averageFillPrice", { precision: 24, scale: 8 }),
+  status: mysqlEnum("status", ["open", "filled", "cancelled", "rejected"]).notNull().default("open"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({ userStatusIdx: index("paper_orders_user_status_idx").on(table.userId, table.status), userCreatedIdx: index("paper_orders_user_created_idx").on(table.userId, table.createdAt) }));
+
+export type PaperOrder = typeof paperOrders.$inferSelect;
+export type InsertPaperOrder = typeof paperOrders.$inferInsert;
+
+/** Immutable paper fills used to derive executed trade history. */
+export const paperFills = mysqlTable("paper_fills", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull().references(() => paperOrders.id, { onDelete: "cascade" }),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  symbol: varchar("symbol", { length: 32 }).notNull(),
+  side: mysqlEnum("side", ["BUY", "SELL"]).notNull(),
+  quantity: decimal("quantity", { precision: 24, scale: 8 }).notNull(),
+  price: decimal("price", { precision: 24, scale: 8 }).notNull(),
+  realizedPnl: decimal("realizedPnl", { precision: 24, scale: 8 }).notNull().default("0"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({ userCreatedIdx: index("paper_fills_user_created_idx").on(table.userId, table.createdAt), orderIdx: index("paper_fills_order_idx").on(table.orderId) }));
+
+export type PaperFill = typeof paperFills.$inferSelect;
+export type InsertPaperFill = typeof paperFills.$inferInsert;
+
+/** Net long/short paper position derived from fills, with cost basis and realized P&L. */
+export const paperPositions = mysqlTable("paper_positions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  symbol: varchar("symbol", { length: 32 }).notNull(),
+  quantity: decimal("quantity", { precision: 24, scale: 8 }).notNull().default("0"),
+  averageEntryPrice: decimal("averageEntryPrice", { precision: 24, scale: 8 }).notNull().default("0"),
+  realizedPnl: decimal("realizedPnl", { precision: 24, scale: 8 }).notNull().default("0"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({ userSymbolIdx: uniqueIndex("paper_positions_user_symbol_idx").on(table.userId, table.symbol) }));
+
+export type PaperPosition = typeof paperPositions.$inferSelect;
+export type InsertPaperPosition = typeof paperPositions.$inferInsert;

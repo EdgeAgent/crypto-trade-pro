@@ -4,10 +4,18 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/trpc", () => ({
   trpc: {
+    useUtils: () => ({ trading: { getPaperAccount: { invalidate: vi.fn() }, getPositions: { invalidate: vi.fn() }, getTradeHistory: { invalidate: vi.fn() }, getPendingOrders: { invalidate: vi.fn() } } }),
     trading: {
-      placeLiveMarketOrder: {
-        useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }),
-      },
+      getPaperAccount: { useQuery: () => ({ data: { cashBalance: 0, configured: false } }) },
+      getPendingOrders: { useQuery: () => ({ data: { orders: [] } }) },
+      getPositions: { useQuery: () => ({ data: { positions: [] } }) },
+      getTradeHistory: { useQuery: () => ({ data: [] }) },
+      fundPaperAccount: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
+      placeMarketOrder: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
+      placeLimitOrder: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
+      modifyOrder: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
+      cancelOrder: { useMutation: () => ({ mutate: vi.fn(), isPending: false }) },
+      placeLiveMarketOrder: { useMutation: () => ({ mutateAsync: vi.fn(), isPending: false }) },
     },
   },
 }));

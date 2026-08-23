@@ -36,17 +36,25 @@ const validOrder = {
 };
 
 describe("trading paper-ledger safety", () => {
-  it("does not claim a market order was executed without a paper ledger", async () => {
+  it("requires explicit paper funding before a market buy can fill", async () => {
     const caller = appRouter.createCaller(createTradingContext());
-    await expect(caller.trading.placeMarketOrder({ symbol: "BTC/USDT", side: "BUY", quantity: 0.001, price: 62000 })).rejects.toThrow("Paper execution is unavailable");
+    await expect(caller.trading.placeMarketOrder({ symbol: "BTC/USDT", side: "BUY", quantity: 0.001, price: 62000 })).rejects.toThrow("Insufficient paper cash");
   });
 
-  it("does not claim a limit order or cancellation succeeded without a paper ledger", async () => {
+  it("requires funds for a limit buy and rejects cancellation or modification of unknown orders", async () => {
     const caller = appRouter.createCaller(createTradingContext());
-    await expect(caller.trading.placeLimitOrder({ symbol: "BTC/USDT", side: "BUY", quantity: 0.001, limitPrice: 61000 })).rejects.toThrow("Paper execution is unavailable");
-    await expect(caller.trading.cancelOrder({ orderId: "order-1" })).rejects.toThrow("Paper execution is unavailable");
-    await expect(caller.trading.getTrades()).resolves.toEqual({ trades: [] });
-    await expect(caller.trading.getPositions()).resolves.toEqual({ positions: [] });
+    await expect(caller.trading.placeLimitOrder({ symbol: "BTC/USDT", side: "BUY", quantity: 0.001, limitPrice: 61000 })).rejects.toThrow("Insufficient paper cash");
+    await expect(caller.trading.cancelOrder({ orderId: 1 })).rejects.toThrow("Only an open paper order");
+    await expect(caller.trading.modifyOrder({ orderId: 1, quantity: 0.002, limitPrice: 60000 })).rejects.toThrow("Only an open paper limit order");
+  });
+
+  it("returns a stable detailed trade-history collection", async () => {
+    const caller = appRouter.createCaller(createTradingContext());
+    const history = await caller.trading.getTradeHistory();
+    expect(Array.isArray(history)).toBe(true);
+    for (const fill of history) {
+      expect(fill).toEqual(expect.objectContaining({ id: expect.any(String), orderId: expect.any(String), symbol: expect.any(String), status: "FILLED", price: expect.any(Number), quantity: expect.any(Number), realizedPnl: expect.any(Number) }));
+    }
   });
 });
 

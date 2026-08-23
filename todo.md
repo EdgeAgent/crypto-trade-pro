@@ -42,15 +42,15 @@
 - [ ] Signal performance tracking
 
 ## Phase 5: Paper Trading Engine
-- [ ] Market order execution
-- [ ] Limit order execution
+- [x] Market order execution — persisted fill at the submitted live quote after cash/position validation
+- [x] Limit order execution — persisted open order requiring a future matching provider
 - [ ] Stop-loss orders
 - [ ] Take-profit orders
-- [ ] Order modification and cancellation
-- [ ] Position tracking
-- [ ] P&L calculations (realized and unrealized)
-- [ ] Trade history with detailed logs
-- [ ] Order status updates
+- [x] Order modification and cancellation — open paper limit modification and cancellation
+- [x] Position tracking — persisted net long positions
+- [ ] P&L calculations (realized and unrealized) — realized is persisted; unrealized remains quote-dependent
+- [x] Trade history with detailed logs — immutable fills with order linkage, symbol, fill price, notional, and realized P&L
+- [x] Order status updates — open, filled, and cancelled states
 
 ## Phase 6: Strategy Bot Deployment
 - [x] Bot creation UI
@@ -134,7 +134,7 @@
 - [ ] social_sentiment table
 - [ ] bot_performance table
 - [ ] price_alerts table
-- [ ] audit_logs table
+- [x] audit_logs table
 
 ## API Integrations
 - [ ] LunarCrush API
@@ -415,3 +415,7 @@
 - [x] Persist live-order gate outcomes without storing secrets
 - [x] Add a protected audit query for the Settings/Risk surface
 - [x] Add unit coverage for audit event redaction and retrieval
+
+## Paper Ledger Follow-up
+- [x] Implement paper order modification for eligible open limit orders, with validation, persistence, UI controls, and tests
+- [x] Expand paper trade history into a detailed execution log and render it with honest loading/empty/error states
