@@ -5,6 +5,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { tradingRouter } from "./routers/trading";
 import { copyTradingRouter } from "./routers/copyTrading";
 import { signalsRouter } from "./routers/signals";
+import { auditRouter } from "./routers/audit";
 import { botsRouter } from "./routers/bots";
 
 export const appRouter = router({
@@ -25,6 +26,7 @@ export const appRouter = router({
   trading: tradingRouter,
   copyTrading: copyTradingRouter,
   signals: signalsRouter,
+  audit: auditRouter,
   bots: botsRouter,
 });
 

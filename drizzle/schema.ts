@@ -90,6 +90,25 @@ export const tradingBots = mysqlTable("trading_bots", {
 export type TradingBot = typeof tradingBots.$inferSelect;
 export type InsertTradingBot = typeof tradingBots.$inferInsert;
 
+/** Operational safety and execution events. Secrets are never stored here. */
+export const auditLogs = mysqlTable("audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").references(() => users.id, { onDelete: "set null" }),
+  eventType: varchar("eventType", { length: 80 }).notNull(),
+  outcome: mysqlEnum("outcome", ["allowed", "rejected", "unavailable"]).notNull(),
+  broker: varchar("broker", { length: 64 }),
+  symbol: varchar("symbol", { length: 32 }),
+  message: text("message").notNull(),
+  metadata: text("metadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  userCreatedIdx: index("audit_logs_user_created_idx").on(table.userId, table.createdAt),
+  eventTypeIdx: index("audit_logs_event_type_idx").on(table.eventType, table.createdAt),
+}));
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = typeof auditLogs.$inferInsert;
+
 /** Provider-backed advisory output. Signals are informational by design. */
 export const tradingSignals = mysqlTable("trading_signals", {
   id: int("id").autoincrement().primaryKey(),

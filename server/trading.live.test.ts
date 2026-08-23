@@ -35,6 +35,21 @@ const validOrder = {
   explicitConfirmation: true as const,
 };
 
+describe("trading paper-ledger safety", () => {
+  it("does not claim a market order was executed without a paper ledger", async () => {
+    const caller = appRouter.createCaller(createTradingContext());
+    await expect(caller.trading.placeMarketOrder({ symbol: "BTC/USDT", side: "BUY", quantity: 0.001, price: 62000 })).rejects.toThrow("Paper execution is unavailable");
+  });
+
+  it("does not claim a limit order or cancellation succeeded without a paper ledger", async () => {
+    const caller = appRouter.createCaller(createTradingContext());
+    await expect(caller.trading.placeLimitOrder({ symbol: "BTC/USDT", side: "BUY", quantity: 0.001, limitPrice: 61000 })).rejects.toThrow("Paper execution is unavailable");
+    await expect(caller.trading.cancelOrder({ orderId: "order-1" })).rejects.toThrow("Paper execution is unavailable");
+    await expect(caller.trading.getTrades()).resolves.toEqual({ trades: [] });
+    await expect(caller.trading.getPositions()).resolves.toEqual({ positions: [] });
+  });
+});
+
 describe("trading.placeLiveMarketOrder", () => {
   it("rejects placeholder-only broker credentials at the procedure boundary", async () => {
     delete process.env.BINANCE_API_KEY;

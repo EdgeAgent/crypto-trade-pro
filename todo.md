@@ -394,3 +394,24 @@
 - [x] Publish newly persisted advisory signals to connected clients
 - [x] Subscribe SignalFeed to push events while retaining polling fallback
 - [x] Add deterministic event-stream unit coverage
+
+
+## Production Hardening Audit
+- [x] Verify paper order validation and lifecycle semantics for market and limit orders — unavailable until the persisted paper ledger is enabled
+- [x] Verify paper positions and realized/unrealized P&L are backed by persisted records rather than UI-only state — empty until ledger persistence exists
+- [x] Verify API-key placeholders never reach exchange requests or logs
+- [x] Add operational audit visibility for order rejection and safety-gate outcomes
+
+
+## Paper Execution Integrity
+- [x] Remove hardcoded balance, random IDs, and fabricated FILLED/PENDING paper order responses
+- [x] Return explicit unavailable/staged states until a persisted paper ledger exists
+- [x] Return empty persisted trades and positions instead of mock records
+- [x] Add regression tests proving paper endpoints never claim execution without ledger persistence
+
+
+## Operational Audit Visibility
+- [x] Add an audit_logs table for user-scoped safety and execution events
+- [x] Persist live-order gate outcomes without storing secrets
+- [x] Add a protected audit query for the Settings/Risk surface
+- [x] Add unit coverage for audit event redaction and retrieval

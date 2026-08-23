@@ -1,7 +1,9 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
+  auditLogs,
   copyTrades,
+  InsertAuditLog,
   InsertCopyTrade,
   InsertTradingBot,
   InsertTradingSignal,
@@ -136,6 +138,35 @@ export async function listActiveSignals(symbol?: string) {
   if (!db) return [];
   const conditions = symbol ? and(eq(tradingSignals.status, "active"), eq(tradingSignals.symbol, symbol)) : eq(tradingSignals.status, "active");
   return db.select().from(tradingSignals).where(conditions).orderBy(desc(tradingSignals.createdAt));
+}
+
+export function redactAuditMetadata(metadata?: string) {
+  if (!metadata) return undefined;
+  try {
+    const parsed = JSON.parse(metadata) as Record<string, unknown>;
+    const safe = Object.fromEntries(Object.entries(parsed).filter(([key]) => !/(key|secret|passphrase|token|credential)/i.test(key)));
+    return JSON.stringify(safe);
+  } catch {
+    return undefined;
+  }
+}
+
+export async function appendAuditLog(input: Omit<InsertAuditLog, "userId">, userId?: number) {
+  const db = await getDb();
+  if (!db) return false;
+  try {
+    await db.insert(auditLogs).values({ ...input, metadata: redactAuditMetadata(input.metadata ?? undefined), userId });
+    return true;
+  } catch (error) {
+    console.warn("[Audit] Failed to persist event:", error);
+    return false;
+  }
+}
+
+export async function listAuditLogsForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(auditLogs).where(eq(auditLogs.userId, userId)).orderBy(desc(auditLogs.createdAt)).limit(50);
 }
 
 export async function listTradeHistoryForUser(userId: number) {
