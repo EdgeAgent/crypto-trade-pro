@@ -429,3 +429,6 @@
 
 ## API Documentation Milestone
 - [x] Document current tRPC procedure contracts and safety semantics
+
+## Request Safety Hardening
+- [x] Add bounded per-user throttling for live-order and advisory-generation procedures with deterministic tests

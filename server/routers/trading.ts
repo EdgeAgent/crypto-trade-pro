@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { assertLiveOrderAllowed, type SupportedBroker } from "../liveOrderGuard";
+import { assertRequestAllowed } from "../requestRateLimit";
 import {
   appendAuditLog,
   cancelPaperOrderForUser,
@@ -57,6 +58,7 @@ export const tradingRouter = router({
   getTradeHistory: protectedProcedure.query(async ({ ctx }) => (await listTradeHistoryForUser(ctx.user.id)).map((trade) => ({ id: String(trade.id), orderId: String(trade.orderId), symbol: trade.symbol, side: trade.side, orderType: "paper", status: "FILLED", price: Number(trade.price), quantity: Number(trade.quantity), totalValue: Number(trade.price) * Number(trade.quantity), realizedPnl: Number(trade.realizedPnl), createdAt: trade.createdAt, timestamp: trade.createdAt.getTime() }))),
 
   placeLiveMarketOrder: protectedProcedure.input(z.object({ broker: z.enum(["binance", "coinbase", "kraken"]), symbol: z.string().min(3), side: z.enum(["BUY", "SELL"]), quantity: z.number().positive(), price: z.number().positive(), dailyLossLimit: z.number().positive(), dailyLossUsed: z.number().nonnegative(), explicitConfirmation: z.literal(true) })).mutation(async ({ ctx, input }) => {
+    assertRequestAllowed(ctx.user.id, "live-order", 5, 60_000);
     try {
       assertLiveOrderAllowed({ broker: input.broker as SupportedBroker, dailyLossLimit: input.dailyLossLimit, dailyLossUsed: input.dailyLossUsed, explicitConfirmation: input.explicitConfirmation });
     } catch (error) {

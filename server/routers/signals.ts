@@ -2,6 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { invokeLLM, listLLMModels } from "../_core/llm";
+import { assertRequestAllowed } from "../requestRateLimit";
 import { createTradingSignalForUser, listActiveSignals } from "../db";
 
 export type SignalRecord = {
@@ -39,8 +40,9 @@ export const signalsRouter = router({
   }),
 
   generate: protectedProcedure.input(marketSnapshot).mutation(async ({ ctx, input }) => {
-    const catalog = await listLLMModels();
-    const model = catalog.data.find((candidate) => candidate.id.toLowerCase().includes("nemotron"))?.id ?? catalog.data.find((candidate) => candidate.id === "gpt-5-mini")?.id ?? catalog.data[0]?.id;
+    assertRequestAllowed(ctx.user.id, "advisory-generation", 10, 60_000);
+    const models = await listLLMModels();
+    const model = models.data.find((candidate) => candidate.id.toLowerCase().includes("nemotron"))?.id ?? models.data.find((candidate) => candidate.id === "gpt-5-mini")?.id ?? models.data[0]?.id;
     if (!model) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "No advisory model is available." });
 
     const response = await invokeLLM({
