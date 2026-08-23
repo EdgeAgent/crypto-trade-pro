@@ -4,14 +4,30 @@ import ReactDOMServer from "react-dom/server";
 import CopyTradingDashboard from "../client/src/components/CopyTradingDashboard";
 import BotBuilder from "../client/src/components/BotBuilder";
 import PerformanceAnalytics from "../client/src/components/PerformanceAnalytics";
+import BotPerformancePanel from "../client/src/components/BotPerformancePanel";
 import { transitionBotStatus } from "../shared/botLifecycle";
 
 describe("platform component safety states", () => {
   it("renders honest empty states for staged copy plans", () => {
     const markup = ReactDOMServer.renderToStaticMarkup(React.createElement(CopyTradingDashboard, { copiedTraders: [], onStopCopy: () => undefined }));
-    expect(markup).toContain("Staged plans");
+    expect(markup).toContain("Persisted plans");
     expect(markup).toContain("No staged copy plans yet");
     expect(markup).toContain("No broker-linked position or performance data is available");
+  });
+
+  it("renders persisted active-copy rows and intent history separately from broker performance", () => {
+    const markup = ReactDOMServer.renderToStaticMarkup(React.createElement(CopyTradingDashboard, { copiedTraders: [{ id: "trader-1", name: "Registry Trader", avatar: "RT", strategy: "Momentum", winRate: 62, monthlyReturn: 8, followers: 10, totalTrades: 20, rating: 4.5, badges: [] }], positions: [{ traderId: "trader-1", symbol: "BTC/USDT", side: "BUY", quantity: 0.2, pnl: 0 }], history: [{ id: "copy-1", traderId: "trader-1", traderName: "Registry Trader", status: "staged", createdAt: new Date("2026-01-01T00:00:00Z") }], onStopCopy: () => undefined }));
+    expect(markup).toContain("Active copied positions");
+    expect(markup).toContain("BTC/USDT");
+    expect(markup).toContain("Persisted intent history");
+    expect(markup).toContain("Registry Trader");
+  });
+
+  it("renders an honest bot performance state without execution history", () => {
+    const markup = ReactDOMServer.renderToStaticMarkup(React.createElement(BotPerformancePanel, {}));
+    expect(markup).toContain("Bot performance");
+    expect(markup).toContain("No bot execution history yet");
+    expect(markup).toContain("Connect a verified broker");
   });
 
   it("renders bot-builder validation before a draft can be staged", () => {

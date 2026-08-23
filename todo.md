@@ -24,20 +24,20 @@
 - [ ] Trader leaderboard (by win rate, returns, followers) — pending live trader registry
 - [ ] Trader profile pages with performance metrics
 - [x] One-click copy trading UI
-- [ ] Active copies dashboard
-- [ ] Copy trade history and performance tracking
+- [x] Active copies dashboard (persisted empty/live state)
+- [x] Copy trade history and performance tracking (persisted intent history; broker-linked performance remains unavailable without a broker)
 - [ ] Follower/reputation system — pending persistent trader registry
 - [ ] Trader signal publishing
-- [ ] Signal feed with real-time updates
+- [x] Signal feed with real-time updates via SSE with polling fallback
 
 ## Phase 4: AI Signal Generation (from Gemini Agent)
 - [ ] LunarCrush API integration for social sentiment
 - [ ] Google Gemini AI signal generation
 - [ ] Inngest background job orchestration
 - [ ] Real-time progress tracking UI
-- [ ] Trading signals database
-- [ ] Confidence score display
-- [ ] Signal reasoning/explanation
+- [x] Trading signals database
+- [x] Confidence score display (provider-backed signal records)
+- [x] Signal reasoning/explanation (provider-backed advisory output)
 - [ ] Discord alert notifications
 - [ ] Signal performance tracking
 
@@ -57,7 +57,7 @@
 - [x] Strategy parameter configuration
 - [x] Bot status management (active/paused/stopped)
 - [ ] Backtesting framework
-- [ ] Performance metrics dashboard
+- [x] Performance metrics dashboard (honest persisted empty state)
 - [ ] Bot execution logs
 - [ ] Strategy templates library
 - [ ] Custom strategy code editor
@@ -91,7 +91,7 @@
 - [ ] Load balancing
 - [ ] Rate limiting
 - [ ] API response caching
-- [ ] Frontend code splitting
+- [x] Frontend code splitting
 - [ ] Image optimization
 - [ ] CDN integration
 
@@ -112,8 +112,8 @@
 - [ ] E2E tests for critical paths
 - [ ] Load testing
 - [ ] Security testing
-- [ ] Mobile responsiveness testing
-- [ ] Browser compatibility testing
+- [x] Mobile responsiveness testing
+- [x] Browser compatibility testing — desktop and phone Chromium route captures pass
 - [ ] Performance profiling
 
 ## Phase 12: Documentation & Deployment
@@ -127,10 +127,10 @@
 - [ ] Troubleshooting guide
 
 ## Database Schema Extensions
-- [ ] traders table
-- [ ] copy_trades table
-- [ ] trading_signals table
-- [ ] trading_bots table
+- [x] traders table
+- [x] copy_trades table
+- [x] trading_signals table
+- [x] trading_bots table
 - [ ] social_sentiment table
 - [ ] bot_performance table
 - [ ] price_alerts table
@@ -345,4 +345,52 @@
 
 ## Final Production Verification Gaps
 - [x] Add responsive Trading assertions for guarded live execution and touch-sized form controls
-- [ ] Save a checkpoint for the production-ready mobile and visual refresh milestone
+- [x] Save a checkpoint for the production-ready mobile and visual refresh milestone
+
+
+## Persistence Contract Design
+- [x] Define user-scoped trader profiles with provider identity and performance fields
+- [x] Define user-scoped copy-trade intent records with staged/active/paused/stopped lifecycle
+- [x] Define user-scoped trading bot records with validated strategy parameters and lifecycle
+- [x] Define advisory signal records with provider, model, confidence, reasoning, and timestamps
+- [x] Keep all new records free of fabricated seed rows and default to empty live states
+
+
+## Persisted Entity Query Wiring
+- [x] Add protected trader, copy-intent, bot, and signal queries backed by the new tables
+- [x] Add protected create/update procedures for staged copy intents and bots with lifecycle validation
+- [x] Wire Traders and Bots pages to persisted queries while keeping empty states honest
+- [x] Add database-helper and router tests proving empty results when no rows exist
+
+
+## Persisted Dashboard Completion Gaps
+- [x] Wire CopyTradingDashboard to getActiveCopies with live/loading/error/empty states
+- [x] Render persisted copy-intent history separately from broker-linked performance data
+- [x] Add an honest bot performance metrics panel with no fabricated metrics when execution history is absent
+- [x] Add component coverage for active-copy, copy-history, and bot-performance empty states
+
+
+## Advisory Signal Generation
+- [x] Add a live-snapshot advisory generation control to the Signals route
+- [x] Gate generation until a real live quote exists and show provider/model status
+- [x] Invalidate the persisted signal feed after successful advisory generation
+- [x] Add tests for advisory-only copy and quote-unavailable gating
+
+
+## Signal Delivery Verification
+- [x] Add true push delivery for persisted advisory signals via SSE with keepalive and disconnect cleanup
+- [x] Add tests covering signal insert/update propagation to subscribed clients
+- [ ] Browser-verify generated advisory cards show provider/model, confidence, reasoning, and advisory-only copy — requires authenticated generation action
+
+
+## Advisory REST Fallback Readiness
+- [x] Allow advisory generation when a valid CoinGecko fallback quote exists despite a disconnected WebSocket
+- [x] Label the Signals readiness badge with the actual quote source instead of showing waiting
+- [x] Add regression coverage for fallback-backed advisory readiness
+
+
+## Signal Push Stream Implementation
+- [x] Add a server signal event stream with keepalive and disconnect cleanup
+- [x] Publish newly persisted advisory signals to connected clients
+- [x] Subscribe SignalFeed to push events while retaining polling fallback
+- [x] Add deterministic event-stream unit coverage

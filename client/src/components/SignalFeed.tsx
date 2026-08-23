@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Activity, AlertCircle, Radio, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,15 @@ import { trpc } from "@/lib/trpc";
 export default function SignalFeed() {
   const signalsQuery = trpc.signals.list.useQuery(undefined, { refetchInterval: 30000 });
   const signals = signalsQuery.data?.signals ?? [];
+  const refetchSignals = signalsQuery.refetch;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof EventSource === "undefined") return;
+    const stream = new EventSource("/api/signals/stream");
+    const onSignal = () => { void refetchSignals(); };
+    stream.addEventListener("signal", onSignal);
+    return () => { stream.removeEventListener("signal", onSignal); stream.close(); };
+  }, [refetchSignals]);
 
   if (signalsQuery.isLoading) return <Card className="border-border/50 bg-card p-10 text-center"><RefreshCw className="mx-auto h-6 w-6 animate-spin text-accent" /><p className="mt-3 text-sm text-muted-foreground">Loading provider-backed signals…</p></Card>;
   if (signalsQuery.isError) return <Card className="border-red-500/30 bg-red-500/5 p-6"><div className="flex items-start gap-3"><AlertCircle className="h-5 w-5 text-red-400" /><div><h2 className="font-semibold text-red-300">Signal provider unavailable</h2><p className="mt-1 text-sm text-red-200/80">{signalsQuery.error.message}</p><Button className="mt-4" variant="outline" onClick={() => signalsQuery.refetch()}>Retry</Button></div></div></Card>;

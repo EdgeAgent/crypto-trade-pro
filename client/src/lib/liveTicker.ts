@@ -32,6 +32,10 @@ export function reduceLiveTickerState(state: LiveTickerState, event: LiveTickerE
   return state;
 }
 
+export function canGenerateAdvisory(state: LiveTickerState): boolean {
+  return state.data !== null && state.source !== null;
+}
+
 export function parseBinanceTicker(payload: unknown): LiveTickerData | null {
   if (!payload || typeof payload !== "object") return null;
   const data = payload as { c?: unknown; P?: unknown; E?: unknown };

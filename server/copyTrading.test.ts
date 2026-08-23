@@ -16,9 +16,15 @@ describe("copy trading provider boundaries", () => {
     const caller = appRouter.createCaller(createContext());
     const traders = await caller.copyTrading.getTopTraders();
     const copies = await caller.copyTrading.getActiveCopies();
+    const bots = await caller.bots.list();
+    const signals = await caller.signals.list();
     expect(traders.traders).toEqual([]);
     expect(traders.status).toBe("awaiting-provider");
     expect(copies.copies).toEqual([]);
+    expect(bots.bots).toEqual([]);
+    expect(bots.status).toBe("empty");
+    expect(signals.signals).toEqual([]);
+    expect(signals.status).toBe("awaiting-provider");
   });
 
   it("rejects follow and copy mutations when providers are not connected", async () => {

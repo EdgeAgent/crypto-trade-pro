@@ -7,7 +7,7 @@ import LiveQuotePanel from "../client/src/components/LiveQuotePanel";
 import { ChartDataState, OhlcChartCanvas } from "../client/src/components/CandlestickChart";
 import { getReconnectDelay } from "../shared/liveStream";
 import { createResilientWebSocketStream, type StreamSocket } from "../client/src/lib/liveStream";
-import { initialLiveTickerState, parseBinanceTicker, reduceLiveTickerState } from "../client/src/lib/liveTicker";
+import { canGenerateAdvisory, initialLiveTickerState, parseBinanceTicker, reduceLiveTickerState } from "../client/src/lib/liveTicker";
 import { calculateTechnicalIndicators, getOhlcDays, parseCoinGeckoOhlc } from "../client/src/lib/ohlc";
 
 describe("live stream resilience", () => {
@@ -68,6 +68,14 @@ describe("live stream resilience", () => {
     const markup = ReactDOMServer.renderToStaticMarkup(React.createElement(ChartDataState, { status: "empty", error: "No candles were returned." }));
     expect(markup).toContain("No candles for this timeframe");
     expect(markup).toContain("No candles were returned.");
+  });
+
+  it("gates advisory generation on a live quote", () => {
+    expect(canGenerateAdvisory(initialLiveTickerState)).toBe(false);
+    const liveState = reduceLiveTickerState(initialLiveTickerState, { type: "fallback-data", data: { price: 62000, change24h: 1.2, eventTime: 123 } });
+    expect(canGenerateAdvisory(liveState)).toBe(true);
+    expect(canGenerateAdvisory({ status: "offline", data: liveState.data, source: "coingecko-rest" })).toBe(true);
+    expect(canGenerateAdvisory({ status: "offline", data: null, source: null })).toBe(false);
   });
 
   it("transitions selected-pair ticker state through connecting, offline, REST fallback, and WebSocket live", () => {
