@@ -102,7 +102,7 @@
 - [x] Rate limiting per user — bounded per-user live-order and advisory-generation throttle
 - [x] Audit logging
 - [ ] Data encryption at rest
-- [ ] HTTPS enforcement
+- [x] HTTPS enforcement — managed TLS deployment plus production HSTS and secure baseline headers
 - [ ] CORS configuration
 - [x] Input validation — Zod-validated tRPC inputs across trading, signals, bots, copy, and audit procedures
 
