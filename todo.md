@@ -68,7 +68,7 @@
 - [ ] Real broker API integration (Binance, Coinbase)
 - [ ] Live order execution
 - [x] Risk management controls
-- [ ] Position sizing calculator
+- [x] Position sizing calculator — advisory-only risk budget and stop-distance calculation in Trading
 - [ ] Stop-loss enforcement
 - [ ] Slippage monitoring
 - [ ] Real-time settlement

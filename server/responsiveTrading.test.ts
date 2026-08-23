@@ -47,5 +47,7 @@ describe("responsive Trading page contracts", () => {
     expect(markup).toContain("touch-target");
     expect(markup).toContain("min-h-12");
     expect(markup).toContain("Stage paper buy order");
+    expect(markup).toContain("Risk sizing");
+    expect(markup).toContain("Advisory only; this never submits an order.");
   });
 });
