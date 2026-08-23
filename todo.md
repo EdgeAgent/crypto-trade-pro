@@ -89,7 +89,7 @@
 - [ ] Redis caching layer
 - [ ] Database indexing optimization
 - [ ] Load balancing
-- [ ] Rate limiting
+- [x] Rate limiting — bounded per-user live-order and advisory-generation throttle; distributed limiter remains pending
 - [ ] API response caching
 - [x] Frontend code splitting
 - [ ] Image optimization
@@ -99,12 +99,12 @@
 - [ ] API key management
 - [ ] Two-factor authentication
 - [ ] Encrypted password storage
-- [ ] Rate limiting per user
-- [ ] Audit logging
+- [x] Rate limiting per user — bounded per-user live-order and advisory-generation throttle
+- [x] Audit logging
 - [ ] Data encryption at rest
 - [ ] HTTPS enforcement
 - [ ] CORS configuration
-- [ ] Input validation
+- [x] Input validation — Zod-validated tRPC inputs across trading, signals, bots, copy, and audit procedures
 
 ## Phase 11: Testing & Quality Assurance
 - [ ] Unit tests for trading logic

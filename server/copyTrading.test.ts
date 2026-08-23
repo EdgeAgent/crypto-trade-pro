@@ -27,6 +27,13 @@ describe("copy trading provider boundaries", () => {
     expect(signals.status).toBe("awaiting-provider");
   });
 
+  it("rejects malformed bot and copy inputs at the tRPC boundary", async () => {
+    const caller = appRouter.createCaller(createContext());
+    await expect(caller.bots.create({ name: "x", strategy: "", symbol: "bad", allocation: 0, stopLoss: 0, takeProfit: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await expect(caller.copyTrading.followTrader({ traderId: "" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    await expect(caller.copyTrading.copyTrade({ traderId: "", tradeId: "", quantity: 0 })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
+
   it("rejects follow and copy mutations when providers are not connected", async () => {
     const caller = appRouter.createCaller(createContext());
     await expect(caller.copyTrading.followTrader({ traderId: "trader-1" })).rejects.toMatchObject({ code: "PRECONDITION_FAILED" });
