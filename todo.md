@@ -111,7 +111,7 @@
 - [x] Integration tests for API flows — protected tRPC boundaries and public signal-feed access
 - [ ] E2E tests for critical paths
 - [ ] Load testing
-- [ ] Security testing
+- [x] Security testing — authenticated boundaries, malformed-input rejection, audit redaction, live-order gates, and request throttling
 - [x] Mobile responsiveness testing
 - [x] Browser compatibility testing — desktop and phone Chromium route captures pass
 - [ ] Performance profiling
