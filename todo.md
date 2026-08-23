@@ -440,3 +440,6 @@
 - [x] Test authenticated paper-account funding and order lifecycle through tRPC — funding, market/limit creation, edit/cancel, positions, and fills
 - [x] Test authenticated bot and copy-trading lifecycle flows — staged bot transition and provider-backed copy intent follow/unfollow/history
 - [x] Test authenticated audit retrieval and advisory error paths — scoped audit query and no-model advisory rejection
+
+## Transport Header Verification
+- [x] Add deterministic tests for production and development HTTP security-header policy
