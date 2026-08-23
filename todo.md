@@ -446,3 +446,8 @@
 
 ## GitHub Export
 - [ ] Export the current project to a private GitHub repository and verify the pushed commit
+
+## GitHub Branding
+- [ ] Create a branded repository banner and product visual assets
+- [ ] Update README title, banner, feature positioning, and badges
+- [ ] Push and verify the branded private GitHub repository
