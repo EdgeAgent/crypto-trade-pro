@@ -114,7 +114,7 @@
 - [x] Security testing — authenticated boundaries, malformed-input rejection, audit redaction, live-order gates, and request throttling
 - [x] Mobile responsiveness testing
 - [x] Browser compatibility testing — desktop and phone Chromium route captures pass
-- [ ] Performance profiling
+- [x] Performance profiling — reproducible production bundle-size baseline in docs/PERFORMANCE_BASELINE.md; runtime Web Vitals remain pending
 
 ## Phase 12: Documentation & Deployment
 - [x] API documentation — current tRPC contract reference in docs/API.md
