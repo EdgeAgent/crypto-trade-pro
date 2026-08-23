@@ -117,7 +117,7 @@
 - [ ] Performance profiling
 
 ## Phase 12: Documentation & Deployment
-- [ ] API documentation
+- [x] API documentation — current tRPC contract reference in docs/API.md
 - [x] User guide
 - [x] Developer guide
 - [x] Deployment guide
@@ -426,3 +426,6 @@
 - [x] Write developer and environment setup guidance
 - [x] Write deployment and troubleshooting guidance
 - [x] Write dedicated database schema documentation covering current tables, key columns, relationships, indexes, and feature dependencies
+
+## API Documentation Milestone
+- [x] Document current tRPC procedure contracts and safety semantics
