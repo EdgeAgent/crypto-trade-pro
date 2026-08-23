@@ -107,8 +107,8 @@
 - [x] Input validation — Zod-validated tRPC inputs across trading, signals, bots, copy, and audit procedures
 
 ## Phase 11: Testing & Quality Assurance
-- [ ] Unit tests for trading logic
-- [ ] Integration tests for API flows
+- [x] Unit tests for trading logic — safety gates, paper-order contracts, broker boundaries, throttling, and stream/indicator calculations
+- [x] Integration tests for API flows — protected tRPC boundaries and public signal-feed access
 - [ ] E2E tests for critical paths
 - [ ] Load testing
 - [ ] Security testing
@@ -435,3 +435,8 @@
 
 ## Broker Adapter Boundary
 - [x] Add typed Binance, Coinbase, and Kraken adapter contracts with disabled-by-default execution and deterministic capability tests
+
+## Authenticated Integration Coverage
+- [x] Test authenticated paper-account funding and order lifecycle through tRPC — funding, market/limit creation, edit/cancel, positions, and fills
+- [x] Test authenticated bot and copy-trading lifecycle flows — staged bot transition and provider-backed copy intent follow/unfollow/history
+- [x] Test authenticated audit retrieval and advisory error paths — scoped audit query and no-model advisory rejection
