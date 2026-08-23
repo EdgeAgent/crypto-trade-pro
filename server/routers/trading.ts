@@ -3,6 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { assertLiveOrderAllowed, type SupportedBroker } from "../liveOrderGuard";
 import { assertRequestAllowed } from "../requestRateLimit";
+import { getBrokerAdapter } from "../brokers";
 import {
   appendAuditLog,
   cancelPaperOrderForUser,
@@ -65,9 +66,13 @@ export const tradingRouter = router({
       await appendAuditLog({ eventType: "live_order_gate", outcome: "rejected", broker: input.broker, symbol: input.symbol, message: error instanceof Error ? error.message : "Live order rejected by safety gate", metadata: JSON.stringify({ side: input.side }) }, ctx.user.id);
       throw error;
     }
-    const message = "Live execution adapter is not enabled for this environment. Configure and validate a broker connection before enabling real orders.";
-    await appendAuditLog({ eventType: "live_order_adapter", outcome: "unavailable", broker: input.broker, symbol: input.symbol, message, metadata: JSON.stringify({ side: input.side }) }, ctx.user.id);
-    throw new TRPCError({ code: "PRECONDITION_FAILED", message });
+    const adapter = getBrokerAdapter(input.broker);
+    if (!adapter.enabled) {
+      const message = "Live execution adapter is not enabled for this environment. Configure and validate a broker connection before enabling real orders.";
+      await appendAuditLog({ eventType: "live_order_adapter", outcome: "unavailable", broker: input.broker, symbol: input.symbol, message, metadata: JSON.stringify({ side: input.side }) }, ctx.user.id);
+      throw new TRPCError({ code: "PRECONDITION_FAILED", message });
+    }
+    return adapter.submitMarketOrder({ symbol: input.symbol, side: input.side, quantity: input.quantity, price: input.price });
   }),
 
   modifyOrder: protectedProcedure.input(z.object({ orderId: z.coerce.number().int().positive(), quantity: z.number().finite().positive(), limitPrice: z.number().finite().positive() })).mutation(async ({ ctx, input }) => {

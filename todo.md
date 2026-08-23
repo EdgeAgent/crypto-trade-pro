@@ -432,3 +432,6 @@
 
 ## Request Safety Hardening
 - [x] Add bounded per-user throttling for live-order and advisory-generation procedures with deterministic tests
+
+## Broker Adapter Boundary
+- [x] Add typed Binance, Coinbase, and Kraken adapter contracts with disabled-by-default execution and deterministic capability tests
