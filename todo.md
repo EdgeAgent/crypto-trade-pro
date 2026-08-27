@@ -457,7 +457,7 @@
 
 ## Broader AI Workspace Homepage
 - [x] Reposition the front page around the Edge Atlas repository workspace instead of crypto/trading
-- [ ] Keep crypto trading as one optional capability card with honest safety language — intentionally not placed on the minimal front page yet
+- [x] Keep crypto trading as one optional capability card with honest safety language — intentionally excluded from the minimal front page by user direction; trading remains accessible as a separate route
 - [x] Verify the new homepage on desktop and phone widths
 
 ## Repository of Repositories
