@@ -1,12 +1,12 @@
-# CryptoTrade Pro
+# Edge Atlas
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/EdgeAgent/crypto-trade-pro/main/docs/assets/crypto-trade-pro-github-banner.png" alt="CryptoTrade Pro — live market command center" width="1200" />
 </p>
 
 <p align="center">
-  <strong>Trade with signal. Not noise.</strong><br />
-  A safety-gated crypto market command center for provider-backed data, persisted paper trading, advisory signals, and controlled execution readiness.
+  <strong>A repository of repositories.</strong><br />
+  A source-linked workspace for projects, frameworks, and AI prompt skills—with focused detail pages and honest metadata.
 </p>
 
 <p align="center">
@@ -28,20 +28,20 @@
 
 ## What this is
 
-CryptoTrade Pro is a mobile-first trading workspace built around live market information and explicit execution boundaries. It combines CoinGecko REST fallback data, resilient Binance market streams, provider-backed OHLC charts, RSI/MACD/Bollinger indicators, a persisted paper ledger, advisory AI signals, staged copy-trading intents, strategy-bot lifecycle controls, risk sizing, and operational audit visibility.
+Edge Atlas is a calm, source-linked index for the work behind the work: your projects, AI frameworks, prompt skills, automations, and experiments. The app presents one unified repository view plus focused shelves and detail pages that always link back to the originating GitHub repository.
 
-The interface is intentionally designed to show **live, loading, offline, unavailable, or empty** states rather than inventing balances, traders, signals, performance, or execution results.
+The catalog is intentionally designed to show **known, missing, private, or source-pending** metadata rather than inventing stars, rankings, quality scores, adoption, or project status. The existing CryptoTrade Pro trading workspace remains available as one project in the collection, not as the identity of this repository.
 
 ## Product surface
 
 | Surface | Current behavior |
 | --- | --- |
-| Dashboard and Markets | Provider-backed quotes with explicit connection and fallback states |
-| Trading | Persisted paper funding, market fills, open/editable/cancellable limits, positions, fills, and advisory risk sizing |
-| Signals | Structured server-side advisory generation with SSE updates and provider-empty states |
-| Traders and Copy | Registry-backed discovery boundary with staged copy intents; no fabricated trader records |
-| Bots | Validated strategy configuration with staged, active, paused, and stopped lifecycle states |
-| Settings and Risk | Broker placeholders, daily-loss controls, audit activity, and live-readiness disclosures |
+| All Repositories | Unified source-linked index across the current GitHub snapshot |
+| Projects | Searchable project shelf with public/private visibility states and source links |
+| Frameworks | Framework, runtime, protocol, and automation shelf with honest metadata |
+| Prompt Skills | Prompt and workflow shelf, including a source-backed 10,170-item vault claim |
+| Repository detail | Focused source record with owner, visibility, snapshot date, description, and GitHub link |
+| CryptoTrade Pro | Existing trading workspace remains available as a separate project route |
 
 ## Technology
 
@@ -67,7 +67,7 @@ The complete setup, architecture, API, schema, deployment, and troubleshooting r
 
 ## Repository notes
 
-This repository is private and contains no exchange credentials, seeded customer reviews, fabricated trader profiles, or simulated live execution. Configure secrets through the project environment and follow the deployment guide before enabling any real-capital workflow.
+This public repository contains the Edge Atlas catalog experience and project documentation. Catalog entries are a dated GitHub snapshot; they are not an automatic mirror of every repository, Project board, or GitHub Pages site. The collection does not fabricate missing metadata or claim that every listed project is production-ready.
 
 ## Documentation
 
@@ -82,4 +82,4 @@ This repository is private and contains no exchange credentials, seeded customer
 
 ## Status
 
-The current project snapshot is production-hardened for provider-backed observation, honest paper execution, advisory signal delivery, and safety-gated readiness. Real Binance, Coinbase, and Kraken execution adapters remain typed and disabled by default until credential verification, idempotency, order reconciliation, settlement synchronization, and operational review are complete.
+The current project snapshot is focused on cataloging and navigating the Edge Atlas repository collection. The original CryptoTrade Pro trading workspace remains production-hardened for provider-backed observation, honest paper execution, advisory signal delivery, and safety-gated readiness; real Binance, Coinbase, and Kraken execution adapters remain typed and disabled by default.
