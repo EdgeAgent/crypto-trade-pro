@@ -1,7 +1,7 @@
 # Edge Atlas
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/EdgeAgent/crypto-trade-pro/main/docs/assets/crypto-trade-pro-github-banner.png" alt="CryptoTrade Pro — live market command center" width="1200" />
+  <img src="https://3000-icmi3a5h53sj5xs1enntu-28431de7.us3.manus.computer/manus-storage/edge-atlas-github-banner_eeb77c8e.png" alt="Edge Atlas — repository of repositories" width="1200" />
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/tests-59%20passing-18d9c5" alt="59 tests passing" />
   <img src="https://img.shields.io/badge/React%2019-%2300d4ff" alt="React 19" />
   <img src="https://img.shields.io/badge/TypeScript-%233178c6" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/license-private%20repository-7c5cff" alt="Private repository" />
+  <img src="https://img.shields.io/badge/license-MIT-7c5cff" alt="MIT license" />
 </p>
 
 > **Safety first:** paper mode is the default. Live order execution remains disabled until a broker connection is independently configured, validated, reconciled, and explicitly confirmed for each order.
@@ -23,7 +23,7 @@
 ## Product preview
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/EdgeAgent/crypto-trade-pro/main/docs/assets/crypto-trade-pro-dashboard-preview.png" alt="CryptoTrade Pro dashboard preview" width="1100" />
+  <img src="https://3000-icmi3a5h53sj5xs1enntu-28431de7.us3.manus.computer/manus-storage/edge-atlas-dashboard-preview_b51a6357.png" alt="Edge Atlas repository catalog preview" width="1100" />
 </p>
 
 ## What this is

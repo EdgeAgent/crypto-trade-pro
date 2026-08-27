@@ -473,3 +473,4 @@
 - [x] Rebrand the public GitHub README title and positioning to Edge Atlas and the repository-of-repositories concept
 - [x] Add All Repositories to the primary desktop and mobile navigation so the unified catalog is directly discoverable
 - [x] Add a runnable browser smoke test for the public catalog route covering direct navigation, source links, and responsive layout
+- [x] Replace CryptoTrade-specific README media references with Edge Atlas public branding media
