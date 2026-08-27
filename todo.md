@@ -465,3 +465,4 @@
 - [x] Add Projects, Frameworks, and Prompt Skills library pages with search and filters
 - [x] Add repository detail views with source links and honest missing-data states
 - [x] Reposition the front page around the repository catalog instead of crypto/trading
+- [x] Preserve the homepage search query when navigating into the Projects library

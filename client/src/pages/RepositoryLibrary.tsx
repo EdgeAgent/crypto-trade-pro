@@ -15,7 +15,7 @@ const categories: Array<{ value: RepositoryCategory; label: string; icon: typeof
 const slugFor = (name: string) => encodeURIComponent(name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""));
 
 export default function RepositoryLibrary({ category }: { category: RepositoryCategory }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "");
   const [visibility, setVisibility] = useState<"all" | "public" | "private">("all");
   const records = useMemo(() => repositoryCatalog.filter((repo) => {
     const matchesCategory = repo.category === category;
