@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/badge/license-MIT-7c5cff" alt="MIT license" />
 </p>
 
-> **Safety first:** paper mode is the default. Live order execution remains disabled until a broker connection is independently configured, validated, reconciled, and explicitly confirmed for each order.
+> **Honesty first:** catalog records point to their source and preserve missing or unavailable states. The optional trading workspace keeps paper mode as its default and live execution explicitly gated.
 
 ## Product preview
 
