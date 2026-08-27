@@ -474,3 +474,4 @@
 - [x] Add All Repositories to the primary desktop and mobile navigation so the unified catalog is directly discoverable
 - [x] Add a runnable browser smoke test for the public catalog route covering direct navigation, source links, and responsive layout
 - [x] Replace CryptoTrade-specific README media references with Edge Atlas public branding media
+- [x] Document the new catalog browser smoke command in the public README verification section

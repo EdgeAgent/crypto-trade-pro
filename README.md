@@ -59,6 +59,7 @@ For verification:
 ```bash
 pnpm check
 pnpm test
+pnpm test:e2e
 pnpm build
 node scripts/profile-build.mjs
 ```
