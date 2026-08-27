@@ -469,3 +469,4 @@
 - [x] Update the browser document title and metadata to match Edge Atlas branding
 - [x] Surface the verified 10,170-item prompt/template vault as a source-backed collection note, without fabricating individual skill records
 - [x] Add a unified All Repositories page spanning projects, frameworks, and prompt skills
+- [ ] Sync the Edge Atlas catalog implementation and latest checkpoint to the public GitHub repository
