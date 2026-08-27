@@ -471,3 +471,4 @@
 - [x] Add a unified All Repositories page spanning projects, frameworks, and prompt skills
 - [x] Sync the Edge Atlas catalog implementation and latest checkpoint to the public GitHub repository — public main at b448baa
 - [x] Rebrand the public GitHub README title and positioning to Edge Atlas and the repository-of-repositories concept
+- [x] Add All Repositories to the primary desktop and mobile navigation so the unified catalog is directly discoverable

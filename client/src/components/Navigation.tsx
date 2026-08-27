@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { BarChart3, BookOpen, Boxes, ChevronRight, FolderGit2, LayoutDashboard, LogOut, Menu, Settings, X } from "lucide-react";
+import { BarChart3, BookOpen, Boxes, ChevronRight, FolderGit2, LayoutDashboard, LibraryBig, LogOut, Menu, Settings, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: "/", label: "Home", shortLabel: "Home", icon: LayoutDashboard },
+  { href: "/repositories", label: "All Repositories", shortLabel: "All", icon: LibraryBig },
   { href: "/projects", label: "Projects", shortLabel: "Projects", icon: FolderGit2 },
   { href: "/frameworks", label: "Frameworks", shortLabel: "Frameworks", icon: Boxes },
   { href: "/prompt-skills", label: "Prompt Skills", shortLabel: "Skills", icon: BookOpen },
