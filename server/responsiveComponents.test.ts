@@ -29,8 +29,10 @@ describe("responsive production contracts", () => {
     const markup = render(React.createElement(Navigation));
     expect(markup).toContain("Open navigation menu");
     expect(markup).toContain("href=\"/settings\"");
-    expect(markup).toContain("PAPER");
-    expect(markup).toContain("PAPER · SAFETY GATED");
+    expect(markup).toContain("Edge Atlas");
+    expect(markup).toContain("href=\"/projects\"");
+    expect(markup).toContain("href=\"/frameworks\"");
+    expect(markup).toContain("href=\"/prompt-skills\"");
     expect(markup).toContain("touch-target");
   });
 

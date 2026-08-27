@@ -1,7 +1,7 @@
 # CryptoTrade Pro
 
 <p align="center">
-  <img src="docs/assets/crypto-trade-pro-github-banner.png" alt="CryptoTrade Pro — live market command center" width="1200" />
+  <img src="https://raw.githubusercontent.com/EdgeAgent/crypto-trade-pro/main/docs/assets/crypto-trade-pro-github-banner.png" alt="CryptoTrade Pro — live market command center" width="1200" />
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 ## Product preview
 
 <p align="center">
-  <img src="docs/assets/crypto-trade-pro-dashboard-preview.png" alt="CryptoTrade Pro dashboard preview" width="1100" />
+  <img src="https://raw.githubusercontent.com/EdgeAgent/crypto-trade-pro/main/docs/assets/crypto-trade-pro-dashboard-preview.png" alt="CryptoTrade Pro dashboard preview" width="1100" />
 </p>
 
 ## What this is

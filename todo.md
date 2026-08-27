@@ -451,3 +451,17 @@
 - [x] Create a branded repository banner and product visual assets
 - [x] Update README title, banner, feature positioning, and badges
 - [x] Push and verify the branded private GitHub repository — main at ce57e226
+
+## External Deployment
+- [ ] Deploy the public GitHub repository to Vercel or Netlify and verify a live preview URL
+
+## Broader AI Workspace Homepage
+- [x] Reposition the front page around the Edge Atlas repository workspace instead of crypto/trading
+- [ ] Keep crypto trading as one optional capability card with honest safety language — intentionally not placed on the minimal front page yet
+- [x] Verify the new homepage on desktop and phone widths
+
+## Repository of Repositories
+- [x] Add a source-linked catalog schema for projects, frameworks, and AI prompt skills — 87 GitHub-derived records with source URLs and snapshot metadata
+- [x] Add Projects, Frameworks, and Prompt Skills library pages with search and filters
+- [x] Add repository detail views with source links and honest missing-data states
+- [x] Reposition the front page around the repository catalog instead of crypto/trading

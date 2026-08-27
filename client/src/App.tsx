@@ -14,6 +14,8 @@ const Traders = lazy(() => import("./pages/Traders"));
 const Signals = lazy(() => import("./pages/Signals"));
 const Bots = lazy(() => import("./pages/Bots"));
 const Settings = lazy(() => import("./pages/Settings"));
+const RepositoryLibrary = lazy(() => import("./pages/RepositoryLibrary"));
+const RepositoryDetail = lazy(() => import("./pages/RepositoryDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function RouteLoading() {
@@ -21,7 +23,7 @@ function RouteLoading() {
 }
 
 function Router() {
-  return <div className="min-h-screen bg-background"><Suspense fallback={<RouteLoading />}><Switch><Route path="/" component={Home} /><Route path="/markets" component={Markets} /><Route path="/asset/:id" component={AssetDetail} /><Route path="/trading" component={Trading} /><Route path="/traders" component={Traders} /><Route path="/signals" component={Signals} /><Route path="/bots" component={Bots} /><Route path="/settings" component={Settings} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch></Suspense></div>;
+  return <div className="min-h-screen bg-background"><Suspense fallback={<RouteLoading />}><Switch><Route path="/" component={Home} /><Route path="/markets" component={Markets} /><Route path="/asset/:id" component={AssetDetail} /><Route path="/trading" component={Trading} /><Route path="/traders" component={Traders} /><Route path="/signals" component={Signals} /><Route path="/bots" component={Bots} /><Route path="/settings" component={Settings} /><Route path="/projects" component={() => <RepositoryLibrary category="Projects" />} /><Route path="/frameworks" component={() => <RepositoryLibrary category="Frameworks" />} /><Route path="/prompt-skills" component={() => <RepositoryLibrary category="Prompt Skills" />} /><Route path="/repository/:slug" component={RepositoryDetail} /><Route path="/404" component={NotFound} /><Route component={NotFound} /></Switch></Suspense></div>;
 }
 
 function App() {

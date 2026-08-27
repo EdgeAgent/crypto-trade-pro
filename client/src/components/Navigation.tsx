@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { BarChart3, Bot, ChevronRight, LayoutDashboard, LogOut, Menu, Settings, Signal, TrendingUp, Users, X } from "lucide-react";
+import { BarChart3, BookOpen, Boxes, ChevronRight, FolderGit2, LayoutDashboard, LogOut, Menu, Settings, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
@@ -16,12 +16,10 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Dashboard", shortLabel: "Home", icon: LayoutDashboard },
-  { href: "/markets", label: "Markets", shortLabel: "Markets", icon: TrendingUp },
-  { href: "/traders", label: "Traders", shortLabel: "Traders", icon: Users },
-  { href: "/signals", label: "Signals", shortLabel: "Signals", icon: Signal },
-  { href: "/bots", label: "Bots", shortLabel: "Bots", icon: Bot },
-  { href: "/trading", label: "Trade", shortLabel: "Trade", icon: TrendingUp },
+  { href: "/", label: "Home", shortLabel: "Home", icon: LayoutDashboard },
+  { href: "/projects", label: "Projects", shortLabel: "Projects", icon: FolderGit2 },
+  { href: "/frameworks", label: "Frameworks", shortLabel: "Frameworks", icon: Boxes },
+  { href: "/prompt-skills", label: "Prompt Skills", shortLabel: "Skills", icon: BookOpen },
 ];
 
 function isActivePath(currentPath: string, href: string) {
@@ -62,7 +60,7 @@ export default function Navigation() {
               <SheetHeader className="border-b border-white/10 px-5 py-5 text-left">
                 <SheetTitle className="flex items-center gap-3 text-left text-foreground">
                   <span className="brand-mark h-9 w-9 rounded-xl"><BarChart3 className="h-5 w-5" /></span>
-                  <span>CryptoTrade Pro</span>
+                  <span>Edge Atlas</span>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex h-[calc(100%-78px)] flex-col justify-between px-3 py-4">
@@ -89,7 +87,7 @@ export default function Navigation() {
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Execution mode</p>
-                        <p className="mt-1 flex items-center gap-2 text-sm font-bold text-accent"><span className="status-dot bg-accent" /> Paper trading</p>
+                        <p className="mt-1 flex items-center gap-2 text-sm font-bold text-accent"><span className="status-dot bg-accent" /> PAPER · SAFETY GATED</p>
                       </div>
                       <Badge variant="outline" className="border-accent/30 text-accent">Safe</Badge>
                     </div>
@@ -106,9 +104,9 @@ export default function Navigation() {
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="group flex min-w-0 items-center gap-3 text-foreground" aria-label="CryptoTrade Pro dashboard">
+          <Link href="/" className="group flex min-w-0 items-center gap-3 text-foreground" aria-label="Edge Atlas home">
             <span className="brand-mark h-10 w-10 shrink-0 rounded-2xl shadow-[0_0_24px_rgba(0,217,255,0.22)]"><BarChart3 className="h-5 w-5" /></span>
-            <span className="min-w-0 truncate text-[15px] font-bold tracking-tight sm:text-lg">CryptoTrade <span className="text-accent">Pro</span></span>
+            <span className="min-w-0 truncate text-[15px] font-bold tracking-tight sm:text-lg">Edge <span className="text-accent">Atlas</span></span>
           </Link>
         </div>
 
@@ -128,8 +126,8 @@ export default function Navigation() {
         <div className="flex items-center justify-end gap-2 sm:gap-3">
           <Link href="/settings" className="hidden items-center gap-2 rounded-xl border border-accent/20 bg-accent/[0.06] px-3 py-2 text-left transition-colors hover:border-accent/40 hover:bg-accent/[0.1] sm:flex" aria-label="Open live trading settings">
             <span className="status-dot bg-accent" />
-            <span className="hidden xl:block"><span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Trading mode</span><span className="block text-xs font-bold text-accent">PAPER · SAFETY GATED</span></span>
-            <span className="text-xs font-bold text-accent xl:hidden">PAPER</span>
+            <span className="hidden xl:block"><span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Workspace</span><span className="block text-xs font-bold text-accent">REPOSITORY ATLAS</span></span>
+            <span className="text-xs font-bold text-accent xl:hidden">ATLAS</span>
           </Link>
           <Link href="/settings" className="touch-target flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-muted-foreground transition-colors hover:border-accent/30 hover:text-foreground" aria-label="Settings">
             <Settings className="h-4 w-4" />
